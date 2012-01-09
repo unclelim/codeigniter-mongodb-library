@@ -595,21 +595,6 @@ class Mongo_db {
 	 	{
 	 		show_error("In order to retreive documents from MongoDB, a collection name must be passed", 500);
 	 	}
-	 	
-	 	if (isset($this->wheres['_id']) and ! ($this->wheres['_id'] instanceof MongoId))
-		{
-			if( is_array( $this->wheres['_id']) ){ // looks like case of IN or NIN
-				foreach($this->wheres['_id'][key($this->wheres['_id'])] as $i=>$id)
-				{
-					if( !($id instanceof MongoId) )
-					{
-						$this->wheres['_id'][key($this->wheres['_id'])][$i] = new MongoId($id);
-					}
-				}
-			}else{
-				$this->wheres['_id'] = new MongoId($this->wheres['_id']);
-			}
-		}
 	 		 	
 	 	$documents = $this->db->{$collection}->find($this->wheres, $this->selects)->limit((int) $this->limit)->skip((int) $this->offset)->sort($this->sorts);
 	 	
@@ -769,11 +754,6 @@ class Mongo_db {
 		{
 			show_error("Nothing to update in Mongo collection or update is not an array", 500);	
 		}
-		
-		if (isset($this->wheres['_id']) and ! ($this->wheres['_id'] instanceof MongoId))
-		{
-			$this->wheres['_id'] = new MongoId($this->wheres['_id']);
-		}
 				
 		try
 		{
@@ -814,11 +794,6 @@ class Mongo_db {
 		if (count($this->updates) == 0)
 		{
 			show_error("Nothing to update in Mongo collection or update is not an array", 500);	
-		}
-	
-	 	if (isset($this->wheres['_id']) and ! ($this->wheres['_id'] instanceof MongoId))
-		{
-			$this->wheres['_id'] = new MongoId($this->wheres['_id']);
 		}
 				
 		try
@@ -1128,11 +1103,6 @@ class Mongo_db {
 		if (empty($collection))
 		{
 			show_error("No Mongo collection selected to delete from", 500);
-		}
-		
-	 	if (isset($this->wheres['_id']) and ! ($this->wheres['_id'] instanceof MongoId))
-		{
-			$this->wheres['_id'] = new MongoId($this->wheres['_id']);
 		}
 		
 		try
