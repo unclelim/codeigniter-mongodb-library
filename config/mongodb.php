@@ -12,7 +12,7 @@
  * ['mongo_persist_key'] The persistant connection key
  * ['mongo_query_safety'] Safety level of write queries. "safe" = committed in memory, "fsync" = committed to harddisk
  * ['mongo_supress_connect_error'] If the driver can't connect by default it will throw an error which dislays the username and password used to connect. Set to TRUE to hide these details.
- * ['host_db_flag']   If running in auth mode and the user does not have global read/write then set this to true
+ * ['mongo_host_db_flag']   If running in auth mode and the user does not have global read/write then set this to true
  */
 
 $config['default']['mongo_hostbase'] = 'localhost:27017';
@@ -23,4 +23,4 @@ $config['default']['mongo_persist']  = TRUE;
 $config['default']['mongo_persist_key']	 = 'ci_persist';
 $config['default']['mongo_query_safety'] = 'safe';
 $config['default']['mongo_supress_connect_error'] = TRUE;
-$config['default']['host_db_flag']   = FALSE;
+$config['default']['mongo_host_db_flag']   = FALSE;
