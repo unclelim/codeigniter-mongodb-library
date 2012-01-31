@@ -1,5 +1,4 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * CodeIgniter MongoDB Active Record Library
  *
@@ -8,8 +7,8 @@
  * @author    Alex Bilbie <alex@alexbilbie.com>
  * @copyright 2012 Alex Bilbie.
  * @license   MIT License http://www.opensource.org/licenses/mit-license.php
- * @version	   Release: 0.4.8
- * @link      http://httpster.com/code/ci-mongo
+ * @version   Release: 2.0
+ * @link      https://github.com/alexbilbie/codeigniter-mongodb-library
  */
 class Mongo_db {
 	
@@ -199,6 +198,8 @@ class Mongo_db {
 	* $this->mongo_db->switch_dbhandle('foobar');
 	* </code>
 	*
+	* @param string $database Database name
+	*
 	* @access public
 	* @return boolean
 	*/
@@ -229,6 +230,8 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->drop_dbhandle("foobar");
 	* </code>
+	*
+	* @param string $database Database name
 	*
 	* @access public
 	* @return boolean
@@ -262,6 +265,9 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->drop_collection('foo', 'bar');
 	* </code>
+	*
+	* @param string $database   Database name
+	* @param string $collection Collection name
 	*
 	* @access public
 	* @return boolean
@@ -305,6 +311,9 @@ class Mongo_db {
 	* $this->mongo_db->select(array('foo', 'bar'))->get('foobar');
 	* </code>
 	* 
+	* @param array $includes Fields to include in the returned result
+	* @param array $excludes Fields to exclude from the returned result
+	*
 	* @access public
 	* @return object
 	*/
@@ -350,6 +359,9 @@ class Mongo_db {
 	* $this->mongo_db->where(array('foo' => 'bar'))->get('foobar');
 	* </code>
 	*
+	* @param array|string $wheres Array of where conditions. If string, $value must be set
+	* @param mixed        $value  Value of $wheres if $wheres is a string
+	*
 	* @access public
 	* @return object
 	*/
@@ -380,6 +392,8 @@ class Mongo_db {
 	* $this->mongo_db->or_where(array('foo'=>'bar', 'bar'=>'foo'))->get('foobar');
 	* </code>
 	*
+	* @param array $wheres Array of where conditions
+	*
 	* @access public
 	* @return object
 	*/
@@ -409,6 +423,9 @@ class Mongo_db {
 	* $this->mongo_db->where_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
 	* </code>
 	*
+	* @param string $field     Name of the field
+	* @param array  $in_values Array of values that $field could be
+	*
 	* @access public
 	* @return object
 	*/
@@ -427,6 +444,9 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->where_in_all('foo', array('bar', 'zoo', 'blah'))->get('foobar');
 	* </code>
+	*
+	* @param string $field     Name of the field
+	* @param array  $in_values Array of values that $field must be
 	*
 	* @access public
 	* @return object
@@ -447,6 +467,9 @@ class Mongo_db {
 	* $this->mongo_db->where_not_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
 	* </code>
 	*
+	* @param string $field     Name of the field
+	* @param array  $in_values Array of values that $field isnt
+	*
 	* @access public
 	* @return object
 	*/ 
@@ -465,6 +488,9 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->where_gt('foo', 20);
 	* </code>
+	*
+	* @param string $field Name of the field
+	* @param mixed  $value Value that $field is greater than
 	*
 	* @access public
 	* @return object
@@ -485,6 +511,9 @@ class Mongo_db {
 	* $this->mongo_db->where_gte('foo', 20);
 	* </code>
 	*
+	* @param string $field Name of the field
+	* @param mixed  $value Value that $field is greater than or equal to
+	*
 	* @access public
 	* @return object
 	*/
@@ -503,6 +532,9 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->where_lt('foo', 20);
 	* </code>
+	*
+	* @param string $field Name of the field
+	* @param mixed  $value Value that $field is less than
 	*
 	* @access public
 	* @return object
@@ -523,6 +555,9 @@ class Mongo_db {
 	* $this->mongo_db->where_lte('foo', 20);
 	* </code>
 	*
+	* @param string $field Name of the field
+	* @param mixed  $value Value that $field is less than or equal to
+	*
 	* @access public
 	* @return object
 	*/
@@ -542,10 +577,14 @@ class Mongo_db {
 	* $this->mongo_db->where_between('foo', 20, 30);
 	* </code>
 	*
+	* @param string $field   Name of the field
+	* @param int    $value_x Value that $field is greater than or equal to
+	* @param int    $value_y Value that $field is less than or equal to
+	*
 	* @access public
 	* @return object
 	*/
-	public function where_between($field = '', $value_x, $value_y)
+	public function where_between($field = '', $value_x = 0, $value_y = 0)
 	{
 		$this->_where_init($field);
 		$this->wheres[$field]['$gte'] = $value_x;
@@ -561,6 +600,10 @@ class Mongo_db {
 	* <code>
 	* $this->mongo_db->where_between_ne('foo', 20, 30);
 	* </code>
+	*
+	* @param string $field   Name of the field
+	* @param int    $value_x Value that $field is greater than or equal to
+	* @param int    $value_y Value that $field is less than or equal to
 	*
 	* @access public
 	* @return object
@@ -582,6 +625,9 @@ class Mongo_db {
 	* $this->mongo_db->where_ne('foo', 1)->get('foobar');
 	* </code>
 	*
+	* @param string $field Name of the field
+	* @param mixed  $value Value that $field is not equal to
+	*
 	* @access public
 	* @return object
 	*/
@@ -601,6 +647,9 @@ class Mongo_db {
 	* $this->mongo_db->where_near('foo', array('50','50'))->get('foobar');
 	* </code>
 	*
+	* @param string $field  Name of the field
+	* @param array  $coords Array of coordinates
+	*
 	* @access public
 	* @return object
 	*/
@@ -617,15 +666,15 @@ class Mongo_db {
 	* Get the documents where the (string) value of a $field is like a value. The defaults
 	* allow for a case-insensitive search.
 	*
-	* @param string $field The field
-	* @param string $value The value to match against
-	* @param string $flags Allows for the typical regular expression flags:<br>i = case insensitive<br>m = multiline<br>x = can contain comments<br>l = locale<br>s = dotall, "." matches everything, including newlines<br>u = match unicode
-	* @param boolean $enable_start_wildcard If set to anything other than TRUE, a starting line character "^" will be prepended to the search value, representing only searching for a value at the start of a new line.
-	* @param boolean $enable_end_wildcard If set to anything other than TRUE, an ending line character "$" will be appended to the search value, representing only searching for a value at the end of a line.
-	*
 	* <code>
 	* $this->mongo_db->like('foo', 'bar', 'im', FALSE, TRUE);
 	* </code>
+	*
+	* @param string  $field                 The field
+	* @param string  $value                 The value to match against
+	* @param string  $flags                 Allows for the typical regular expression flags:<br>i = case insensitive<br>m = multiline<br>x = can contain comments<br>l = locale<br>s = dotall, "." matches everything, including newlines<br>u = match unicode
+	* @param boolean $enable_start_wildcard If set to anything other than TRUE, a starting line character "^" will be prepended to the search value, representing only searching for a value at the start of a new line.
+	* @param boolean $enable_end_wildcard   If set to anything other than TRUE, an ending line character "$" will be appended to the search value, representing only searching for a value at the end of a line.
 	*
 	* @access public
 	* @return object
@@ -653,13 +702,15 @@ class Mongo_db {
 	}
 	
 	/**
-	 * order_by.
+	 * order_by
 	 *
 	 * Sort the documents based on the parameters passed. To set values to descending order, you must pass values of either -1, FALSE, 'desc', or 'DESC', else they will be set to 1 (ASC).
 	 *
 	 * <code>
 	 * $this->mongo_db->order_by(array('foo' => 'ASC'))->get('foobar');
 	 * </code>
+	 *
+	 * @param array $fields Array of fields with their sort type (asc or desc)
 	 *
 	 * @access public
 	 * @return object
@@ -691,6 +742,8 @@ class Mongo_db {
 	 * $this->mongo_db->_limit($x);
 	 * </code>
 	 *
+	 * @param int $limit The maximum number of documents that will be returned
+	 *
 	 * @access public
 	 * @return object
 	 */
@@ -713,6 +766,8 @@ class Mongo_db {
 	 * $this->mongo_db->_offset($x);
 	 * </code>
 	 *
+	 * @param int $offset The number of documents to offset the search by
+	 *
 	 * @access public
 	 * @return object
 	 */
@@ -727,30 +782,39 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	// Get where
-	*	--------------------------------------------------------------------------------
+	* Get where.
 	*
-	*	Get the documents based upon the passed parameters
+	* Get the documents based upon the passed parameters
 	*
-	*	@usage : $this->mongo_db->get_where('foo', array('bar' => 'something'));
-	*/
-	
+	* <code>
+	* $this->mongo_db->get_where('foo', array('bar' => 'something'));
+	* </code>
+	*
+	* @param string $collection Name of the collection
+	* @param array  $where      Array of where conditions
+	*
+	* @access public
+	* @return array
+	*/	
 	public function get_where($collection = '', $where = array())
 	{
 		return ($this->where($where)->get($collection));
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	// Get
-	*	--------------------------------------------------------------------------------
+	* Get.
 	*
-	*	Get the documents based upon the passed parameters
+	* Return the found documents
 	*
-	*	@usage : $this->mongo_db->get('foo');
+	* <code>
+	* $this->mongo_db->get('foo');
+	* </code>
+	*
+	* @param string $collection Name of the collection
+	*
+	* @access public
+	* @return array
 	*/
-	
 	public function get($collection = '')
 	{
 		if (empty($collection))
@@ -794,15 +858,19 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Count
-	*	--------------------------------------------------------------------------------
+	* Count.
 	*
-	*	Count the documents based upon the passed parameters
+	* Count the number of found documents
 	*
-	*	@usage : $this->mongo_db->count('foo');
+	* <code>
+	* $this->mongo_db->count('foo');
+	* </code>
+	*
+	* @param string $collection Name of the collection
+	*
+	* @access public
+	* @return int
 	*/
-	
 	public function count($collection = '')
 	{
 		if (empty($collection))
@@ -822,15 +890,20 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	//! Insert
-	*	--------------------------------------------------------------------------------
-	*
-	*	Insert a new document into the passed collection
-	*
-	*	@usage : $this->mongo_db->insert('foo', $data = array());
-	*/
-	
+	 * Insert.
+	 *
+	 * Insert a new document
+	 *
+	 * <code>
+	 * $this->mongo_db->insert('foo', array('foo'=>'bar'));
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 * @param array  $insert     The document to be inserted
+	 *
+	 * @access public
+	 * @return boolean
+	 */
 	public function insert($collection = '', $insert = array())
 	{
 		if (empty($collection))
@@ -869,14 +942,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* --------------------------------------------------------------------------------
-	* Batch Insert
-	* --------------------------------------------------------------------------------
-	*
-	* Insert a multiple new document into the passed collection
-	*
-	* @usage : $this->mongo_db->batch_insert('foo', $data = array());
-	*/
+	 * Insert.
+	 *
+	 * Insert a new document
+	 *
+	 * <code>
+	 * $this->mongo_db->insert('foo', array('foo'=>'bar'));
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 * @param array  $insert     The document to be inserted
+	 *
+	 * @access public
+	 * @return boolean
+	 */
 	public function batch_insert($collection = '', $insert = array())
 	{
 		if (empty($collection))
@@ -914,25 +993,25 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	//! Update
-	*	--------------------------------------------------------------------------------
-	*
-	*	Updates a single document
-	*
-	*	@usage: $this->mongo_db->update('foo', $data = array());
-	*/
-	
-	public function update($collection = '', $data = array(), $options = array())
+	 * Update a document.
+	 *
+	 * Updates a document
+	 *
+	 * <code>
+	 * $this->mongo_db->update('foo');
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 * @param array  $options    Array of update options
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function update($collection = '', $options = array())
 	{
 		if (empty($collection))
 		{
 			show_error('No Mongo collection selected to update', 500);
-		}
-		
-		if (is_array($data) AND count($data) > 0)
-		{
-			$this->updates = array_merge($data, $this->updates);
 		}
 		
 		if (count($this->updates) === 0)
@@ -957,25 +1036,25 @@ class Mongo_db {
 	
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Update all
-	*	--------------------------------------------------------------------------------
-	*
-	*	Updates a collection of documents
-	*
-	*	@usage: $this->mongo_db->update_all('foo', $data = array());
-	*/
-	
-	public function update_all($collection = '', $data = array(), $options = array())
+	 * Update all documents.
+	 *
+	 * Updates a document
+	 *
+	 * <code>
+	 * $this->mongo_db->update_all('foo');
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 * @param array  $options    Array of update options
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function update_all($collection = '', $options = array())
 	{
 		if (empty($collection))
 		{
 			show_error('No Mongo collection selected to update', 500);
-		}
-		
-		if (is_array($data) AND count($data) > 0)
-		{
-			$this->updates = array_merge($data, $this->updates);
 		}
 		
 		if (count($this->updates) === 0)
@@ -999,15 +1078,20 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Inc
-	*	--------------------------------------------------------------------------------
-	*
-	*	Increments the value of a field
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->inc(array('num_comments' => 1))->update('blog_posts');
-	*/
-	
+	 * Inc.
+	 *
+	 * Increments the value of a field
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->inc(array('num_comments' => 1))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param array|string $fields Array of field names (or a single string field name) to be incremented
+	 * @param int          $value  Value that the field(s) should be incremented by
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function inc($fields = array(), $value = 0)
 	{
 		$this->_update_init('$inc');
@@ -1029,15 +1113,20 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Dec
-	*	--------------------------------------------------------------------------------
-	*
-	*	Decrements the value of a field
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->dec(array('num_comments' => 1))->update('blog_posts');
-	*/
-	
+	 * Dec.
+	 *
+	 * Decrements the value of a field
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->dec(array('num_comments' => 1))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param array|string $fields Array of field names (or a single string field name) to be decremented
+	 * @param int          $value  Value that the field(s) should be decremented by
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function dec($fields = array(), $value = 0)
 	{
 		$this->_update_init('$inc');
@@ -1059,16 +1148,21 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Set
-	*	--------------------------------------------------------------------------------
-	*
-	*	Sets a field to a value
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->set('posted', 1)->update('blog_posts');
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->set(array('posted' => 1, 'time' => time()))->update('blog_posts');
-	*/
-	
+	 * Set.
+	 *
+	 * Sets a field to a value
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->set('posted', 1)->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->set(array('posted' => 1, 'time' => time()))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param array|string $fields Array of field names (or a single string field name)
+	 * @param mixed        $value  Value that the field(s) should be set to 
+	 *
+	 * @access public
+	 * @return object	
+	 */
 	public function set($fields, $value = NULL)
 	{
 		$this->_update_init('$set');
@@ -1090,16 +1184,19 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Unset
-	*	--------------------------------------------------------------------------------
-	*
-	*	Unsets a field (or fields)
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->unset('posted')->update('blog_posts');
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->set(array('posted','time'))->update('blog_posts');
-	*/
-
+	 * Unset.
+	 * 
+	 * Unsets a field (or fields)
+	 * 
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->unset('posted')->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->set(array('posted','time'))->update('blog_posts');
+	 * 
+	 * @param array|string $fields Array of field names (or a single string field name) to be unset
+	 *
+	 * @access public
+	 * @return object	
+	 */
 	public function unset_field($fields)
 	{
 		$this->_update_init('$unset');
@@ -1121,16 +1218,21 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Add to set
-	*	--------------------------------------------------------------------------------
-	*
-	*	Adds value to the array only if its not in the array already
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->addtoset('tags', 'php')->update('blog_posts');
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->addtoset('tags', array('php', 'codeigniter', 'mongodb'))->update('blog_posts');
-	*/
-	
+	 * Add to set.
+	 *
+	 * Adds value to the array only if its not in the array already
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->addtoset('tags', 'php')->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->addtoset('tags', array('php', 'codeigniter', 'mongodb'))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param string       $field  Name of the field
+	 * @param string|array $values Value of the field(s)
+	 *
+	 * @access public
+	 * @return object	
+	 */
 	public function addtoset($field, $values)
 	{
 		$this->_update_init('$addToSet');
@@ -1149,16 +1251,21 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Push
-	*	--------------------------------------------------------------------------------
-	*
-	*	Pushes values into a field (field must be an array)
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->push('comments', array('text'=>'Hello world'))->update('blog_posts');
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->push(array('comments' => array('text'=>'Hello world')), 'viewed_by' => array('Alex')->update('blog_posts');
-	*/
-
+	 * Push.
+	 * 
+	 * Pushes values into a field (field must be an array)
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->push('comments', array('text'=>'Hello world'))->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->push(array('comments' => array('text'=>'Hello world')), 'viewed_by' => array('Alex')->update('blog_posts');
+	 * </code>
+	 *
+	 * @param array|string $fields Array of field names (or a single string field name)
+	 * @param mixed        $value  Value of the field(s) to be pushed into an array or object
+	 *
+	 * @access public
+	 * @return object	
+	 */
 	public function push($fields, $value = array())
 	{
 		$this->_update_init('$push');
@@ -1180,16 +1287,20 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Pop
-	*	--------------------------------------------------------------------------------
-	*
-	*	Pops the last value from a field (field must be an array)
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->pop('comments')->update('blog_posts');
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->pop(array('comments', 'viewed_by'))->update('blog_posts');
-	*/
-	
+	 * Pop.
+	 * 
+	 * Pops the last value from a field (field must be an array)
+	 * 
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->pop('comments')->update('blog_posts');
+	 * $this->mongo_db->where(array('blog_id'=>123))->pop(array('comments', 'viewed_by'))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param string $field Name of the field to be popped
+	 *
+	 * @access public
+	 * @return object	
+	 */
 	public function pop($field)
 	{
 		$this->_update_init('$pop');
@@ -1211,15 +1322,20 @@ class Mongo_db {
 	}
 
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Pull
-	*	--------------------------------------------------------------------------------
-	*
-	*	Removes by an array by the value of a field
-	*
-	*	@usage: $this->mongo_db->pull('comments', array('comment_id'=>123))->update('blog_posts');
-	*/
-	
+	 * Pull.
+	 *
+	 * Removes by an array by the value of a field
+	 *
+	 * <code>
+	 * $this->mongo_db->pull('comments', array('comment_id'=>123))->update('blog_posts');
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param array  $value Array of identifiers to remove $field
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function pull($field = '', $value = array())
 	{
 		$this->_update_init('$pull');
@@ -1230,14 +1346,20 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Rename field
-	*	--------------------------------------------------------------------------------
-	*
-	*	Renames a field
-	*
-	*	@usage: $this->mongo_db->where(array('blog_id'=>123))->rename_field('posted_by', 'author')->update('blog_posts');
-	*/	
+	 * Rename field.
+	 *
+	 * Renames a field
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('blog_id'=>123))->rename_field('posted_by', 'author')->update('blog_posts');
+	 * </code>
+	 *
+	 * @param string $old_name Name of the field to be renamed
+	 * @param string $new_name New name for $old_name
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function rename_field($old_name, $new_name)
 	{
 		$this->_update_init('$rename');
@@ -1246,15 +1368,19 @@ class Mongo_db {
 	}
 		
 	/**
-	*	--------------------------------------------------------------------------------
-	*	//! Delete
-	*	--------------------------------------------------------------------------------
-	*
-	*	delete document from the passed collection based upon certain criteria
-	*
-	*	@usage : $this->mongo_db->delete('foo');
-	*/
-	
+	 * Delete.
+	 *
+	 * delete document from the passed collection based upon certain criteria
+	 *
+	 * <code>
+	 * $this->mongo_db->delete('foo');
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function delete($collection = '')
 	{
 		if (empty($collection))
@@ -1276,15 +1402,19 @@ class Mongo_db {
 	}
 	
 	/**
-	*	--------------------------------------------------------------------------------
-	*	Delete all
-	*	--------------------------------------------------------------------------------
-	*
-	*	Delete all documents from the passed collection based upon certain criteria
-	*
-	*	@usage : $this->mongo_db->delete_all('foo', $data = array());
-	*/
-	
+	 * Delete all.
+	 *
+	 * Delete all documents from the passed collection based upon certain criteria
+	 *
+	 * <code>
+	 * $this->mongo_db->delete_all('foo', $data = array());
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function delete_all($collection = '')
 	{
 		if (empty($collection))
@@ -1311,15 +1441,19 @@ class Mongo_db {
 	}
 	
 	/**
-	 * --------------------------------------------------------------------------------
-	 * //! Command
-	 * --------------------------------------------------------------------------------
+	 * Command.
 	 * 
-	 * Runs a MongoDB command (such as GeoNear). See the MongoDB documentation for more usage scenarios:
-	 * http://dochub.mongodb.org/core/commands
-	 * 
-	 * @usage : $this->mongo_db->command(array('geoNear'=>'buildings', 'near'=>array(53.228482, -0.547847), 'num' => 10, 'nearSphere'=>true));
-	 */
+	 * Runs a MongoDB command (such as GeoNear). See the MongoDB documentation for more usage scenarios - http://dochub.mongodb.org/core/commands
+	 *
+	 * <code>
+	 * $this->mongo_db->command(array('geoNear'=>'buildings', 'near'=>array(53.228482, -0.547847), 'num' => 10, 'nearSphere'=>true));
+	 * </code>
+	 *
+	 * @param array $query The command query
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function command($query = array())
 	{
 		try
@@ -1335,16 +1469,21 @@ class Mongo_db {
 	}
 	
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	//! Add indexes
-	 *	--------------------------------------------------------------------------------
+	 * Add indexes.
 	 *
-	 *	Ensure an index of the keys in a collection with optional parameters. To set values to descending order,
-	 *	you must pass values of either -1, FALSE, 'desc', or 'DESC', else they will be
-	 *	set to 1 (ASC).
+	 * Ensure an index of the keys in a collection with optional parameters. To set values to descending order, you must pass values of either -1, FALSE, 'desc', or 'DESC', else they will be set to 1 (ASC).
 	 *
-	 *	@usage : $this->mongo_db->add_index($collection, array('first_name' => 'ASC', 'last_name' => -1), array('unique' => TRUE));
-	 */
+	 * <code>
+	 * $this->mongo_db->add_index($collection, array('first_name' => 'ASC', 'last_name' => -1), array('unique' => TRUE));
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 * @param array  $fields     Array of fields to be indexed. Key should be the field name, value should be index type
+	 * @param array  $options    Array of options
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function add_index($collection = '', $fields = array(), $options = array())
 	{
 		if (empty($collection))
@@ -1382,16 +1521,20 @@ class Mongo_db {
 	}
 	
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	Remove index
-	 *	--------------------------------------------------------------------------------
+	 * Remove indexes.
+	 * 
+	 * Remove an index of the keys in a collection. To set values to descending order, you must pass values of either -1, FALSE, 'desc', or 'DESC', else they will be set to 1 (ASC).
+	 * 
+	 * <code>
+	 * $this->mongo_db->remove_index($collection, array('first_name' => 'ASC', 'last_name' => -1));
+	 * </code>
+	 * 
+	 * @param string $collection Name of the collection
+	 * @param array  $keys       Array of index keys to be removed. Array key should be the field name, the value should be -1
 	 *
-	 *	Remove an index of the keys in a collection. To set values to descending order,
-	 *	you must pass values of either -1, FALSE, 'desc', or 'DESC', else they will be
-	 *	set to 1 (ASC).
-	 *
-	 *	@usage : $this->mongo_db->remove_index($collection, array('first_name' => 'ASC', 'last_name' => -1));
-	 */
+	 * @access public
+	 * @return object
+	 */	
 	public function remove_index($collection = '', $keys = array())
 	{
 		if (empty($collection))
@@ -1416,14 +1559,19 @@ class Mongo_db {
 	}
 	
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	Remove all indexes
-	 *	--------------------------------------------------------------------------------
+	 * Remove all indexes
 	 *
-	 *	Remove all indexes from a collection.
+	 * Remove all indexes from a collection.
 	 *
-	 *	@usage : $this->mongo_db->remove_all_index($collection);
-	 */
+	 * <code>
+	 * $this->mongo_db->remove_all_index($collection);
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 *
+	 * @access public
+	 * @return array|object
+	 */    
 	public function remove_all_indexes($collection = '')
 	{
 		if (empty($collection))
@@ -1436,14 +1584,19 @@ class Mongo_db {
 	}
 	
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	List indexes
-	 *	--------------------------------------------------------------------------------
+	 * List indexes.
 	 *
-	 *	Lists all indexes in a collection.
+	 * Lists all indexes in a collection.
 	 *
-	 *	@usage : $this->mongo_db->list_indexes($collection);
-	 */
+	 * <code>
+	 * $this->mongo_db->list_indexes($collection);
+	 * </code>
+	 *
+	 * @param string $collection Name of the collection
+	 *
+	 * @access public
+	 * @return array|object
+	 */    
 	public function list_indexes($collection = '')
 	{
 		if (empty($collection))
@@ -1455,23 +1608,27 @@ class Mongo_db {
 	}
 
 	/**
-	 *	--------------------------------------------------------------------------------
-	 *	Mongo Date
-	 *	--------------------------------------------------------------------------------
+	 * Mongo Date.
+	 * 
+	 * Create new MongoDate object from current time or pass timestamp to create mongodate.
+	 * 
+	 * <code>
+	 * $this->mongo_db->date($timestamp);
+	 * </code>
 	 *
-	 *	Create new MongoDate object from current time or pass timestamp to create
-	 *  mongodate.
+	 * @param int|null $timestamp A unix timestamp (or NULL to return a MongoDate relative to time()
 	 *
-	 *	@usage : $this->mongo_db->date($timestamp);
-	 */
-	public function date($stamp = FALSE)
+	 * @access public
+	 * @return array|object
+	 */    
+	public function date($timestamp = NULL)
 	{
-		if ( $stamp === FALSE )
+		if ($timestamp === NULL)
 		{   
 			return new MongoDate();
 		}
 		
-		return new MongoDate($stamp);            
+		return new MongoDate($timestamp);            
 	}
 
 	/**
@@ -1482,6 +1639,8 @@ class Mongo_db {
 	 * <code>
 	 * $this->mongo_db->get_dbref($object);
 	 * </code>
+	 *
+	 * @param object $object A dbref object
 	 *
 	 * @access public
 	 * @return array|object
@@ -1505,13 +1664,17 @@ class Mongo_db {
 	}
 
 	/**
-	 * create_dbhandleref
+	 * create_dbhandleref.
 	 * 
 	 * Create mongo dbref object to store later
 	 * 
 	 * <code>
 	 * $ref = $this->mongo_db->create_dbref($collection, $id);
 	 * </code>
+	 *
+	 * @param string $collection Collection name
+	 * @param string $field      Field name
+	 * @param string $db_name    Database name
 	 *
 	 * @access public
 	 * @return array|object
@@ -1656,15 +1819,17 @@ class Mongo_db {
 	 * Where initializer.
 	 * 
 	 * Prepares parameters for insertion in $wheres array().
-	 * 
+	 *
+	 * @param string $field Field name 
+	 *
 	 * @access private
 	 * @return void
 	 */	
-	private function _where_init($param)
+	private function _where_init($field)
 	{
-		if ( ! isset($this->wheres[$param]))
+		if ( ! isset($this->wheres[$field]))
 		{
-			$this->wheres[$param] = array();
+			$this->wheres[$field] = array();
 		}
 	}
 	
@@ -1673,14 +1838,16 @@ class Mongo_db {
 	 *
 	 * Prepares parameters for insertion in $updates array().
 	 *
+	 * @param string $field Field name 
+	 *
 	 * @access private
 	 * @return void
 	 */
-	private function _update_init($method = '')
+	private function _update_init($field = '')
 	{
-		if ( ! isset($this->updates[$method]))
+		if ( ! isset($this->updates[$field]))
 		{
-			$this->updates[$method] = array();
+			$this->updates[$field] = array();
 		}
 	}
 	
