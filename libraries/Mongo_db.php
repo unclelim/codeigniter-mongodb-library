@@ -1026,8 +1026,7 @@ class Mongo_db {
 				
 		try
 		{
-			$options = array_merge($options, array($this->_query_safety => TRUE, 'multiple' => FALSE));
-			
+			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => FALSE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
 			
@@ -1075,7 +1074,7 @@ class Mongo_db {
 				
 		try
 		{
-			$options = array_merge($options, array($this->_query_safety => TRUE, 'multiple' => TRUE));
+			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => TRUE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
 			
