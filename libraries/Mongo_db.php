@@ -841,9 +841,9 @@ class Mongo_db {
 				$returns[] = $documents->getNext();
 			}
 			
-			catch (MongoCursorException $e)
+			catch (MongoCursorException $exception)
 			{
-				show_error($e->getMessage(), 500);
+				show_error($exception->getMessage(), 500);
 			}
 		}
 			
@@ -893,11 +893,12 @@ class Mongo_db {
 	 *
 	 * @param string $collection Name of the collection
 	 * @param array  $insert     The document to be inserted
+	 * @param array  $options    Array of options
 	 *
 	 * @access public
 	 * @return boolean
 	 */
-	public function insert($collection = '', $insert = array())
+	public function insert($collection = '', $insert = array(), $options = array())
 	{
 		if (empty($collection))
 		{
@@ -909,13 +910,18 @@ class Mongo_db {
 			show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
 		
+		$options = array_merge(
+					array(
+						$this->query_safety => TRUE
+					),
+					$options
+				);
+		
 		try
 		{
 			$this->_dbhandle
 				->{$collection}
-				->insert($insert, array(
-					$this->_query_safety => TRUE
-				));
+				->insert($insert, $options);
 			
 			if (isset($insert['_id']))
 			{
@@ -945,11 +951,12 @@ class Mongo_db {
 	 *
 	 * @param string $collection Name of the collection
 	 * @param array  $insert     The document to be inserted
+	 * @param array  $options    Array of options
 	 *
 	 * @access public
 	 * @return boolean
 	 */
-	public function batch_insert($collection = '', $insert = array())
+	public function batch_insert($collection = '', $insert = array(), $options = array())
 	{
 		if (empty($collection))
 		{
@@ -961,13 +968,18 @@ class Mongo_db {
 			show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
 		
+		$options = array_merge(
+					array(
+						$this->query_safety => TRUE
+					),
+					$options
+				);
+		
 		try
 		{
 			$this->_dbhandle
 				->{$collection}
-				->batchInsert($insert, array(
-					$this->_query_safety => TRUE
-				));
+				->batchInsert($insert, $options);
 			
 			if (isset($insert['_id']))
 			{
