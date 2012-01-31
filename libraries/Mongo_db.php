@@ -836,13 +836,14 @@ class Mongo_db {
 		
 		while ($documents->hasNext())
 		{
-			if ($this->_ci->config->item('mongo_return') === 'object')
+			try
 			{
-				$returns[] = (object) $documents->getNext();	
+				$returns[] = $documents->getNext();
 			}
-			else 
+			
+			catch (MongoCursorException $e)
 			{
-				$returns[] = (array) $documents->getNext();
+				show_error($e->getMessage(), 500);
 			}
 		}
 			
