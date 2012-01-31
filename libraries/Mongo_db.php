@@ -846,15 +846,7 @@ class Mongo_db {
 			}
 		}
 			
-		if ($this->_ci->config->item('mongo_return') === 'object')
-		{
-			return (object) $returns;
-		}
-		
-		else
-		{
-			return $returns;
-		}
+		return $returns;
 	}
 	
 	/**
