@@ -23,12 +23,18 @@ class Mongo_db {
 	/**
 	 * Config file.
 	 * 
-	 * Default value: 'mongodb'
-	 * 
 	 * @var string
 	 * @access private
 	 */
-	private $__config_file = 'mongodb';
+	private $_config_file = 'mongodb';
+	
+	/**
+	 * Config file data
+	 * 
+	 * @var array
+	 * @access private
+	 */
+	private $_config_data = array();
 	
 	/**
 	 * Connection resource.
@@ -180,14 +186,13 @@ class Mongo_db {
 	private $_offset = 0;
 	
 	/**
-	* Constructor
-	* 
-	* Automatically check if the Mongo PECL extension has been installed/enabled.
-	* Generate the connection string and establish a connection to the MongoDB.
-	*
-	* @access public
-	* @return void
-	*/	
+	 * Constructor
+	 * 
+	 * Automatically check if the Mongo PECL extension has been installed/enabled.
+	 *
+	 * @access public
+	 * @return void
+	 */	
 	public function __construct()
 	{
 		if ( ! class_exists('Mongo'))
@@ -196,35 +201,52 @@ class Mongo_db {
 		}
 		
 		$this->ci = get_instance();
-		$this->_connection_string();
-		$this->_connect();
+		$this->load();
 	}
 	
 	/**
-	* Switch database.
-	* 
-	* <code>
-	* $this->mongo_db->switch_dbhandle('foobar');
-	* </code>
-	*
-	* @param string $database Database name
-	*
-	* @access public
-	* @return boolean
-	*/
-	public function switch_dbhandle($database = '')
+	 * Load.
+	 *
+	 * Load config and connect
+	 *
+	 * @param string $config_name Name of the config file
+	 *
+	 * @access public
+	 * @return void
+	 */	
+	public function load($config_name = 'default')
+	{
+		$this->CI->config->load($this->config_file);
+		$this->config_data = $this->CI->config->item($config_name);
+		$this->connection_string();
+		$this->connect();
+	}	
+
+	/**
+	 * Switch database.
+	 * 
+	 * <code>
+	 * $this->mongo_db->switch_dbhandle('foobar');
+	 * </code>
+	 *
+	 * @param string $database Database name
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function switch_db($database = '')
 	{
 		if (empty($database))
 		{
 			show_error('To switch MongoDB databases, a new database name must be specified', 500);
 		}
 		
-		$this->_dbname = $database;
-		
 		try
 		{
-			$this->_dbhandle = $this->_connection->{$this->_dbname};
-			return TRUE;
+			// Regenerate the connection string and reconnect
+			$this->config_data['mongo_database'] = $database;
+			$this->connection_string();
+			$this->connect();
 		}
 		
 		catch (Exception $exception)
@@ -245,7 +267,7 @@ class Mongo_db {
 	* @access public
 	* @return boolean
 	*/
-	public function drop_dbhandle($database = '')
+	public function drop_db($database = '')
 	{
 		if (empty($database))
 		{
@@ -269,18 +291,18 @@ class Mongo_db {
 	}
 		
 	/**
-	* Drop a collection.
-	* 
-	* <code>
-	* $this->mongo_db->drop_collection('foo', 'bar');
-	* </code>
-	*
-	* @param string $database   Database name
-	* @param string $collection Collection name
-	*
-	* @access public
-	* @return boolean
-	*/
+	 * Drop a collection.
+	 * 
+	 * <code>
+	 * $this->mongo_db->drop_collection('foo', 'bar');
+	 * </code>
+	 *
+	 * @param string $database   Database name
+	 * @param string $collection Collection name
+	 *
+	 * @access public
+	 * @return boolean
+	 */
 	public function drop_collection($database = '', $collection = '')
 	{
 		if (empty($database))
@@ -309,23 +331,23 @@ class Mongo_db {
 	}
 	
 	/**
-	* Set select parameters.
-	* 
-	* Determine which fields to include OR which to exclude during the query process.
-	* Currently, including and excluding at the same time is not available, so the 
-	* $includes array will take precedence over the $excludes array.  If you want to 
-	* only choose fields to exclude, leave $includes an empty array().
-	* 
-	* <code>
-	* $this->mongo_db->select(array('foo', 'bar'))->get('foobar');
-	* </code>
-	* 
-	* @param array $includes Fields to include in the returned result
-	* @param array $excludes Fields to exclude from the returned result
-	*
-	* @access public
-	* @return object
-	*/
+	 * Set select parameters.
+	 * 
+	 * Determine which fields to include OR which to exclude during the query process.
+	 * Currently, including and excluding at the same time is not available, so the 
+	 * $includes array will take precedence over the $excludes array.  If you want to 
+	 * only choose fields to exclude, leave $includes an empty array().
+	 * 
+	 * <code>
+	 * $this->mongo_db->select(array('foo', 'bar'))->get('foobar');
+	 * </code>
+	 * 
+	 * @param array $includes Fields to include in the returned result
+	 * @param array $excludes Fields to exclude from the returned result
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function select($includes = array(), $excludes = array())
 	{
 		if ( ! is_array($includes))
@@ -358,22 +380,22 @@ class Mongo_db {
 	}
 	
 	/**
-	* Set where paramaters
-	*
-	* Get the documents based on these search parameters.  The $wheres array should 
-	* be an associative array with the field as the key and the value as the search
-	* criteria.
-	*
-	* <code>
-	* $this->mongo_db->where(array('foo' => 'bar'))->get('foobar');
-	* </code>
-	*
-	* @param array|string $wheres Array of where conditions. If string, $value must be set
-	* @param mixed        $value  Value of $wheres if $wheres is a string
-	*
-	* @access public
-	* @return object
-	*/
+	 * Set where paramaters
+	 *
+	 * Get the documents based on these search parameters.  The $wheres array should 
+	 * be an associative array with the field as the key and the value as the search
+	 * criteria.
+	 *
+	 * <code>
+	 * $this->mongo_db->where(array('foo' => 'bar'))->get('foobar');
+	 * </code>
+	 *
+	 * @param array|string $wheres Array of where conditions. If string, $value must be set
+	 * @param mixed        $value  Value of $wheres if $wheres is a string
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where($wheres = array(), $value = NULL)
 	{
 		if (is_array($wheres))
@@ -393,19 +415,19 @@ class Mongo_db {
 	}
 	
 	/**
-	* or_where.
-	* 
-	* Get the documents where the value of a $field may be something else
-	* 
-	* <code>
-	* $this->mongo_db->or_where(array('foo'=>'bar', 'bar'=>'foo'))->get('foobar');
-	* </code>
-	*
-	* @param array $wheres Array of where conditions
-	*
-	* @access public
-	* @return object
-	*/
+	 * or_where.
+	 * 
+	 * Get the documents where the value of a $field may be something else
+	 * 
+	 * <code>
+	 * $this->mongo_db->or_where(array('foo'=>'bar', 'bar'=>'foo'))->get('foobar');
+	 * </code>
+	 *
+	 * @param array $wheres Array of where conditions
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function or_where($wheres = array())
 	{
 		if (count($wheres) > 0)
@@ -424,20 +446,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_in.
-	* 
-	* Get the documents where the value of a $field is in a given $in array().
-	* 
-	* <code>
-	* $this->mongo_db->where_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
-	* </code>
-	*
-	* @param string $field     Name of the field
-	* @param array  $in_values Array of values that $field could be
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_in.
+	 * 
+	 * Get the documents where the value of a $field is in a given $in array().
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
+	 * </code>
+	 *
+	 * @param string $field     Name of the field
+	 * @param array  $in_values Array of values that $field could be
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_in($field = '', $in_values = array())
 	{
 		$this->_where_init($field);
@@ -446,20 +468,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_in_all.
-	* 
-	* Get the documents where the value of a $field is in all of a given $in array().
-	* 
-	* <code>
-	* $this->mongo_db->where_in_all('foo', array('bar', 'zoo', 'blah'))->get('foobar');
-	* </code>
-	*
-	* @param string $field     Name of the field
-	* @param array  $in_values Array of values that $field must be
-	*
-	* @access public
-	* @return object
-	*/	
+	 * where_in_all.
+	 * 
+	 * Get the documents where the value of a $field is in all of a given $in array().
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_in_all('foo', array('bar', 'zoo', 'blah'))->get('foobar');
+	 * </code>
+	 *
+	 * @param string $field     Name of the field
+	 * @param array  $in_values Array of values that $field must be
+	 *
+	 * @access public
+	 * @return object
+	 */	
 	public function where_in_all($field = '', $in_values = array())
 	{
 		$this->_where_init($field);
@@ -468,20 +490,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* Where not in
-	* 
-	* Get the documents where the value of a $field is not in a given $in array().
-	* 
-	* <code>
-	* $this->mongo_db->where_not_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
-	* </code>
-	*
-	* @param string $field     Name of the field
-	* @param array  $in_values Array of values that $field isnt
-	*
-	* @access public
-	* @return object
-	*/ 
+	 * Where not in
+	 * 
+	 * Get the documents where the value of a $field is not in a given $in array().
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_not_in('foo', array('bar', 'zoo', 'blah'))->get('foobar');
+	 * </code>
+	 *
+	 * @param string $field     Name of the field
+	 * @param array  $in_values Array of values that $field isnt
+	 *
+	 * @access public
+	 * @return object
+	 */ 
 	public function where_not_in($field = '', $in_values = array())
 	{
 		$this->_where_init($field);
@@ -490,20 +512,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_gt
-	* 
-	* Get the documents where the value of a $field is greater than $value
-	* 
-	* <code>
-	* $this->mongo_db->where_gt('foo', 20);
-	* </code>
-	*
-	* @param string $field Name of the field
-	* @param mixed  $value Value that $field is greater than
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_gt
+	 * 
+	 * Get the documents where the value of a $field is greater than $value
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_gt('foo', 20);
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param mixed  $value Value that $field is greater than
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_gt($field = '', $value = NULL)
 	{
 		$this->_where_init($field);
@@ -512,20 +534,20 @@ class Mongo_db {
 	}
 
 	/**
-	* where_gte
-	* 
-	* Get the documents where the value of a $field is greater than or equal to $value
-	* 
-	* <code>
-	* $this->mongo_db->where_gte('foo', 20);
-	* </code>
-	*
-	* @param string $field Name of the field
-	* @param mixed  $value Value that $field is greater than or equal to
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_gte
+	 * 
+	 * Get the documents where the value of a $field is greater than or equal to $value
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_gte('foo', 20);
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param mixed  $value Value that $field is greater than or equal to
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_gte($field = '', $value = NULL)
 	{
 		$this->_where_init($field);
@@ -534,20 +556,20 @@ class Mongo_db {
 	}
 
 	/**
-	* where_lt.
-	*
-	* Get the documents where the value of a $field is less than $x
-	*
-	* <code>
-	* $this->mongo_db->where_lt('foo', 20);
-	* </code>
-	*
-	* @param string $field Name of the field
-	* @param mixed  $value Value that $field is less than
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_lt.
+	 *
+	 * Get the documents where the value of a $field is less than $x
+	 *
+	 * <code>
+	 * $this->mongo_db->where_lt('foo', 20);
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param mixed  $value Value that $field is less than
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_lt($field = '', $value = NULL)
 	{
 		$this->_where_init($field);
@@ -556,20 +578,20 @@ class Mongo_db {
 	}
 
 	/**
-	* where_lte.
-	*
-	* Get the documents where the value of a $field is less than or equal to $x
-	*
-	* <code>
-	* $this->mongo_db->where_lte('foo', 20);
-	* </code>
-	*
-	* @param string $field Name of the field
-	* @param mixed  $value Value that $field is less than or equal to
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_lte.
+	 *
+	 * Get the documents where the value of a $field is less than or equal to $x
+	 *
+	 * <code>
+	 * $this->mongo_db->where_lte('foo', 20);
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param mixed  $value Value that $field is less than or equal to
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_lte($field = '', $value = NULL)
 	{
 		$this->_where_init($field);
@@ -578,21 +600,21 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_between
-	* 
-	* Get the documents where the value of a $field is between $x and $y
-	* 
-	* <code>
-	* $this->mongo_db->where_between('foo', 20, 30);
-	* </code>
-	*
-	* @param string $field   Name of the field
-	* @param int    $value_x Value that $field is greater than or equal to
-	* @param int    $value_y Value that $field is less than or equal to
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_between
+	 * 
+	 * Get the documents where the value of a $field is between $x and $y
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_between('foo', 20, 30);
+	 * </code>
+	 *
+	 * @param string $field   Name of the field
+	 * @param int    $value_x Value that $field is greater than or equal to
+	 * @param int    $value_y Value that $field is less than or equal to
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_between($field = '', $value_x = 0, $value_y = 0)
 	{
 		$this->_where_init($field);
@@ -602,21 +624,21 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_between_ne
-	* 
-	* Get the documents where the value of a $field is between but not equal to $x and $y
-	* 
-	* <code>
-	* $this->mongo_db->where_between_ne('foo', 20, 30);
-	* </code>
-	*
-	* @param string $field   Name of the field
-	* @param int    $value_x Value that $field is greater than or equal to
-	* @param int    $value_y Value that $field is less than or equal to
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_between_ne
+	 * 
+	 * Get the documents where the value of a $field is between but not equal to $x and $y
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_between_ne('foo', 20, 30);
+	 * </code>
+	 *
+	 * @param string $field   Name of the field
+	 * @param int    $value_x Value that $field is greater than or equal to
+	 * @param int    $value_y Value that $field is less than or equal to
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_between_ne($field = '', $value_x, $value_y)
 	{
 		$this->_where_init($field);
@@ -626,20 +648,20 @@ class Mongo_db {
 	}
 
 	/**
-	* where_ne
-	* 
-	* Get the documents where the value of a $field is not equal to $x
-	* 
-	* <code>
-	* $this->mongo_db->where_ne('foo', 1)->get('foobar');
-	* </code>
-	*
-	* @param string $field Name of the field
-	* @param mixed  $value Value that $field is not equal to
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_ne
+	 * 
+	 * Get the documents where the value of a $field is not equal to $x
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_ne('foo', 1)->get('foobar');
+	 * </code>
+	 *
+	 * @param string $field Name of the field
+	 * @param mixed  $value Value that $field is not equal to
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function where_ne($field = '', $value)
 	{
 		$this->_where_init($field);
@@ -648,20 +670,20 @@ class Mongo_db {
 	}
 	
 	/**
-	* where_near
-	* 
-	* Get the documents nearest to an array of coordinates (your collection must have a geospatial index)
-	* 
-	* <code>
-	* $this->mongo_db->where_near('foo', array('50','50'))->get('foobar');
-	* </code>
-	*
-	* @param string $field  Name of the field
-	* @param array  $coords Array of coordinates
-	*
-	* @access public
-	* @return object
-	*/
+	 * where_near
+	 * 
+	 * Get the documents nearest to an array of coordinates (your collection must have a geospatial index)
+	 * 
+	 * <code>
+	 * $this->mongo_db->where_near('foo', array('50','50'))->get('foobar');
+	 * </code>
+	 *
+	 * @param string $field  Name of the field
+	 * @param array  $coords Array of coordinates
+	 *
+	 * @access public
+	 * @return object
+	 */
 	function where_near($field = '', $coords = array())
 	{
 		$this->__where_init($field);
@@ -670,24 +692,24 @@ class Mongo_db {
 	}
 	
 	/**
-	* like
-	* 
-	* Get the documents where the (string) value of a $field is like a value. The defaults
-	* allow for a case-insensitive search.
-	*
-	* <code>
-	* $this->mongo_db->like('foo', 'bar', 'im', FALSE, TRUE);
-	* </code>
-	*
-	* @param string  $field                 The field
-	* @param string  $value                 The value to match against
-	* @param string  $flags                 Allows for the typical regular expression flags:<br>i = case insensitive<br>m = multiline<br>x = can contain comments<br>l = locale<br>s = dotall, "." matches everything, including newlines<br>u = match unicode
-	* @param boolean $enable_start_wildcard If set to anything other than TRUE, a starting line character "^" will be prepended to the search value, representing only searching for a value at the start of a new line.
-	* @param boolean $enable_end_wildcard   If set to anything other than TRUE, an ending line character "$" will be appended to the search value, representing only searching for a value at the end of a line.
-	*
-	* @access public
-	* @return object
-	*/
+	 * like
+	 * 
+	 * Get the documents where the (string) value of a $field is like a value. The defaults
+	 * allow for a case-insensitive search.
+	 *
+	 * <code>
+	 * $this->mongo_db->like('foo', 'bar', 'im', FALSE, TRUE);
+	 * </code>
+	 *
+	 * @param string  $field                 The field
+	 * @param string  $value                 The value to match against
+	 * @param string  $flags                 Allows for the typical regular expression flags:<br>i = case insensitive<br>m = multiline<br>x = can contain comments<br>l = locale<br>s = dotall, "." matches everything, including newlines<br>u = match unicode
+	 * @param boolean $enable_start_wildcard If set to anything other than TRUE, a starting line character "^" will be prepended to the search value, representing only searching for a value at the start of a new line.
+	 * @param boolean $enable_end_wildcard   If set to anything other than TRUE, an ending line character "$" will be appended to the search value, representing only searching for a value at the end of a line.
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function like($field = '', $value = '', $flags = 'i', $enable_start_wildcard = TRUE, $enable_end_wildcard = TRUE)
 	{
 		$field = (string) trim($field);
@@ -1774,18 +1796,15 @@ class Mongo_db {
 	 * @return void
 	 */
 	private function _connection_string() 
-	{
-		$this->_ci->config->load($this->_config_file);
-		
-		$this->_host = trim($this->_ci->config->item('mongo_host'));
-		$this->_port = trim($this->_ci->config->item('mongo_port'));
-		$this->_user = trim($this->_ci->config->item('mongo_user'));
-		$this->_pass = trim($this->_ci->config->item('mongo_pass'));
-		$this->_dbname = trim($this->_ci->config->item('mongo_dbhandle'));
-		$this->_persist = trim($this->_ci->config->item('mongo_persist'));
-		$this->_persist_key = trim($this->_ci->config->item('mongo_persist_key'));
-		$this->_query_safety = trim($this->_ci->config->item('mongo_query_safety'));
-		$dbhostflag = (bool)$this->_ci->config->item('host_dbhandle_flag');
+	{		
+		$this->host = trim($this->config_data['mongo_hostbase']);
+		$this->user = trim($this->config_data['mongo_username']);
+		$this->pass = trim($this->config_data['mongo_password']);
+		$this->dbname = trim($this->config_data['mongo_database']);
+		$this->persist = trim($this->config_data['mongo_persist']);
+		$this->persist_key = trim($this->config_data['mongo_persist_key']);
+		$this->query_safety = trim($this->config_data['mongo_query_safety']);
+		$dbhostflag = (bool) $this->config_data['mongo_host_db_flag'];
 		
 		$connection_string = 'mongodb://';
 		
@@ -1804,14 +1823,7 @@ class Mongo_db {
 			$connection_string .= $this->_user . ':' . $this->_pass . '@';
 		}
 		
-		if (isset($this->_port) AND ! empty($this->_port))
-		{
-			$connection_string .= $this->_host . ':' . $this->_port;
-		}
-		else
-		{
-			$connection_string .= $this->_host;
-		}
+		$connection_string .= $this->_host;
 		
 		if ($dbhostflag === TRUE)
 		{
