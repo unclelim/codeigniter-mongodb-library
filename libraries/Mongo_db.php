@@ -161,6 +161,15 @@ class Mongo_db {
 	 * @access private
 	 */
 	private $_limit = 999999;
+
+	
+	/**
+	 * Query log.
+	 * 
+	 * @var integer
+	 * @access private
+	 */
+	private $_query_log = array();
 	
 	/**
 	 * Result offset.
@@ -830,7 +839,7 @@ class Mongo_db {
 							->sort($this->_sorts);
 		
 		// Clear
-		$this->_clear();
+		$this->_clear($collection, 'get');
 		
 		$returns = array();
 		
@@ -878,7 +887,7 @@ class Mongo_db {
 						->skip($this->_offset)
 						->count();
 						
-		$this->_clear();
+		$this->_clear($collection, 'count');
 		return ($count);
 	}
 	
@@ -1028,7 +1037,7 @@ class Mongo_db {
 		{
 			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => FALSE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
-			$this->_clear();
+			$this->_clear($collection, 'update');
 			
 			if ($result['updatedExisting'] > 0)
 			{
@@ -1076,7 +1085,7 @@ class Mongo_db {
 		{
 			$options = array_merge(array($this->_query_safety => TRUE, 'multiple' => TRUE), $options);
 			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
-			$this->_clear();
+			$this->_clear($collection, 'update_all');
 			
 			if ($result['updatedExisting'] > 0)
 			{
@@ -1406,7 +1415,7 @@ class Mongo_db {
 		try
 		{
 			$this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => TRUE));
-			$this->_clear();
+			$this->_clear($collection, 'delete');
 			return TRUE;
 		}
 		
@@ -1445,7 +1454,7 @@ class Mongo_db {
 		try
 		{
 			$this->_dbhandle->{$collection}->remove($this->wheres, array($this->_query_safety => TRUE, 'justOne' => FALSE));
-			$this->_clear();
+			$this->_clear($collection, 'delete_all');
 			return TRUE;
 		}
 		
@@ -1525,7 +1534,7 @@ class Mongo_db {
 		
 		if ($this->_dbhandle->{$collection}->ensureIndex($fields, $options) === TRUE)
 		{
-			$this->_clear();
+			$this->_clear($collection, 'add_index');
 			return $this;
 		}
 		
@@ -1564,7 +1573,7 @@ class Mongo_db {
 		
 		if ($this->_dbhandle->{$collection}->deleteIndex($keys, $options) === TRUE)
 		{
-			$this->_clear();
+			$this->_clear($collection, 'remove_index');
 			return ($this);
 		}
 		else
@@ -1594,7 +1603,7 @@ class Mongo_db {
 			show_error('No Mongo collection specified to remove all indexes from', 500);
 		}
 		$this->_dbhandle->{$collection}->deleteIndexes();
-		$this->_clear();
+		$this->_clear($collection, 'remove_all_indexes');
 		return ($this);
 	}
 	
@@ -1720,6 +1729,23 @@ class Mongo_db {
 	}
 	
 	/**
+	 * last_query.
+	 * 
+	 * Return the last query
+	 * 
+	 * <code>
+	 * print_r($this->mongo_db->last_query());
+	 * </code>
+	 *
+	 * @access public
+	 * @return array
+	 */
+	public function last_query()
+	{
+		return $_query_log;
+	}
+		
+	/**
 	 * Connect to MongoDB
 	 * 
 	 * Establish a connection to MongoDB using the connection string generated in
@@ -1820,8 +1846,20 @@ class Mongo_db {
 	 * @access private
 	 * @return void
 	 */
-	private function _clear()
+	private function _clear($collection, $action)
 	{
+		$this->_query_log = array(
+			'collection'	=> $collection,
+			'action' 		=> $action,
+			'wheres' 		=> $this->wheres,
+			'inserts'		=> $insert,
+			'updates'		=> $this->updates,
+			'selects'		=> $this->selects,
+			'limit'	 		=> $this->limit,
+			'offset' 		=> $this->offset,
+			'sorts'	 		=> $this->sorts
+		);
+			
 		$this->_selects	= array();
 		$this->updates	= array();
 		$this->wheres	= array();
