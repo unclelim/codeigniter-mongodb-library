@@ -1023,9 +1023,15 @@ class Mongo_db {
 		{
 			$options = array_merge($options, array($this->_query_safety => TRUE, 'multiple' => FALSE));
 			
-			$this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
+			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
-			return TRUE;
+			
+			if ($result['updatedExisting'] > 0)
+			{
+				return $result['updatedExisting'];
+			}
+			
+			return FALSE;
 		}
 		
 		catch (MongoCursorException $exception)
@@ -1065,10 +1071,15 @@ class Mongo_db {
 		try
 		{
 			$options = array_merge($options, array($this->_query_safety => TRUE, 'multiple' => TRUE));
-			$this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
+			$result = $this->_dbhandle->{$collection}->update($this->wheres, $this->updates, $options);
 			$this->_clear();
 			
-			return TRUE;
+			if ($result['updatedExisting'] > 0)
+			{
+				return $result['updatedExisting'];
+			}
+			
+			return FALSE;
 		}
 		
 		catch (MongoCursorException $exception)
