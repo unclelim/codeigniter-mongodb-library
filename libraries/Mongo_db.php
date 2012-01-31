@@ -666,7 +666,7 @@ class Mongo_db {
 	{
 		$this->__where_init($field);
 		$this->where[$what]['$near'] = $coords;
-		return ($this);
+		return $this;
 	}
 	
 	/**
@@ -807,7 +807,7 @@ class Mongo_db {
 	*/	
 	public function get_where($collection = '', $where = array())
 	{
-		return ($this->where($where)->get($collection));
+		return $this->where($where)->get($collection);
 	}
 	
 	/**
@@ -886,9 +886,9 @@ class Mongo_db {
 						->limit($this->_limit)
 						->skip($this->_offset)
 						->count();
-						
+		
 		$this->_clear($collection, 'count');
-		return ($count);
+		return $count;
 	}
 	
 	/**
@@ -934,7 +934,7 @@ class Mongo_db {
 			
 			if (isset($insert['_id']))
 			{
-				return ($insert['_id']);
+				return $insert['_id'];
 			}
 			
 			else
@@ -1574,7 +1574,7 @@ class Mongo_db {
 		if ($this->_dbhandle->{$collection}->deleteIndex($keys, $options) === TRUE)
 		{
 			$this->_clear($collection, 'remove_index');
-			return ($this);
+			return $this;
 		}
 		else
 		{
@@ -1604,7 +1604,7 @@ class Mongo_db {
 		}
 		$this->_dbhandle->{$collection}->deleteIndexes();
 		$this->_clear($collection, 'remove_all_indexes');
-		return ($this);
+		return $this;
 	}
 	
 	/**
@@ -1628,7 +1628,7 @@ class Mongo_db {
 			show_error('No Mongo collection specified to remove all indexes from', 500);
 		}
 		
-		return ($this->_dbhandle->{$collection}->getIndexInfo());
+		return $this->_dbhandle->{$collection}->getIndexInfo();
 	}
 
 	/**
@@ -1709,7 +1709,7 @@ class Mongo_db {
 		
 		$database = ($db_name !== '') ? $db_name : $this->_dbhandle;
 		
-		return (array) MongoDBRef::create($collection, $field, $database);
+		return MongoDBRef::create($collection, $field, $database);
 	}
 	
 	/**
@@ -1752,7 +1752,7 @@ class Mongo_db {
 		{
 			$this->_connection = new Mongo($this->_connection_string, $options);
 			$this->_dbhandle = $this->_connection->{$this->_dbname};
-			return ($this);	
+			return $this;	
 		} 
 		catch (MongoConnectionException $exception)
 		{
