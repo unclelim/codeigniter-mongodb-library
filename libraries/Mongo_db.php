@@ -114,7 +114,7 @@ class Mongo_db {
 	 * @var string
 	 * @access private
 	 */
-	private $_persist_key = 'ci_mongo_persist';
+	private $_persist_key = 'ci_mongo';
 	
 	/**
 	 * Query safety value.
