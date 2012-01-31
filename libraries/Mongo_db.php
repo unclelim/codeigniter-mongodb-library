@@ -1676,15 +1676,7 @@ class Mongo_db {
 			show_error('To use MongoDBRef::get() ala get_dbhandleref() you must pass a valid reference object', 500);
 		}
 		
-		if ($this->_ci->config->item('mongo_return') === 'object')
-		{
-			return (object) MongoDBRef::get($this->_dbhandle, $object);
-		}
-		
-		else
-		{
-			return (array) MongoDBRef::get($this->_dbhandle, $object);
-		}                
+			return MongoDBRef::get($this->_dbhandle, $object);
 	}
 
 	/**
@@ -1717,15 +1709,7 @@ class Mongo_db {
 		
 		$database = ($db_name !== '') ? $db_name : $this->_dbhandle;
 		
-		if ($this->_ci->config->item('mongo_return') === 'object')
-		{
-			return (object) MongoDBRef::create($collection, $field, $database);
-		}
-		
-		else
-		{
-			return (array) MongoDBRef::create($collection, $field, $database);
-		}                
+		return (array) MongoDBRef::create($collection, $field, $database);
 	}
 	
 	/**
