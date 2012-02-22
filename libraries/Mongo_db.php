@@ -189,13 +189,13 @@ class Mongo_db {
 	{
 		if ( ! class_exists('Mongo'))
 		{
-			show_error('The MongoDB PECL extension has not been installed or enabled', 500);
+			$this->_show_error('The MongoDB PECL extension has not been installed or enabled', 500);
 		}
 		
 		$this->_ci = get_instance();
 		$this->load();
 	}
-	
+		
 	/**
 	 * Load.
 	 *
@@ -230,7 +230,7 @@ class Mongo_db {
 	{
 		if (empty($database))
 		{
-			show_error('To switch MongoDB databases, a new database name must be specified', 500);
+			$this->_show_error('To switch MongoDB databases, a new database name must be specified', 500);
 		}
 		
 		try
@@ -243,7 +243,7 @@ class Mongo_db {
 		
 		catch (Exception $exception)
 		{
-			show_error('Unable to switch Mongo Databases: ' . $exception->getMessage(), 500);
+			$this->_show_error('Unable to switch Mongo Databases: ' . $exception->getMessage(), 500);
 		}
 	}
 		
@@ -263,7 +263,7 @@ class Mongo_db {
 	{
 		if (empty($database))
 		{
-			show_error('Failed to drop MongoDB database because name is empty', 500);
+			$this->_show_error('Failed to drop MongoDB database because name is empty', 500);
 		}
 		
 		else
@@ -276,7 +276,7 @@ class Mongo_db {
 
 			catch (Exception $exception)
 			{
-				show_error('Unable to drop Mongo database `' . $database . '`: ' . $exception->getMessage(), 500);
+				$this->_show_error('Unable to drop Mongo database `' . $database . '`: ' . $exception->getMessage(), 500);
 			}
 			
 		}
@@ -299,12 +299,12 @@ class Mongo_db {
 	{
 		if (empty($database))
 		{
-			show_error('Failed to drop MongoDB collection because database name is empty', 500);
+			$this->_show_error('Failed to drop MongoDB collection because database name is empty', 500);
 		}
 	
 		if (empty($collection))
 		{
-			show_error('Failed to drop MongoDB collection because collection name is empty', 500);
+			$this->_show_error('Failed to drop MongoDB collection because collection name is empty', 500);
 		}
 		
 		else
@@ -317,7 +317,7 @@ class Mongo_db {
 			
 			catch (Exception $exception)
 			{
-				show_error('Unable to drop Mongo collection `' . $collection . '`: ' . $exception->getMessage(), 500);
+				$this->_show_error('Unable to drop Mongo collection `' . $collection . '`: ' . $exception->getMessage(), 500);
 			}
 		}
 	}
@@ -842,7 +842,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
+			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 
 		$documents = $this->_dbhandle
@@ -866,7 +866,7 @@ class Mongo_db {
 			
 			catch (MongoCursorException $exception)
 			{
-				show_error($exception->getMessage(), 500);
+				$this->_show_error($exception->getMessage(), 500);
 			}
 		}
 			
@@ -891,7 +891,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('In order to retrieve a count of documents from MongoDB, a collection name must be passed', 500);
+			$this->_show_error('In order to retrieve a count of documents from MongoDB, a collection name must be passed', 500);
 		}
 		
 		$count = $this->_dbhandle
@@ -925,12 +925,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to insert into', 500);
+			$this->_show_error('No Mongo collection selected to insert into', 500);
 		}
 		
 		if (count($insert) === 0 OR ! is_array($insert))
 		{
-			show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
+			$this->_show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
 		
 		$options = array_merge(
@@ -959,7 +959,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Insert of data into MongoDB failed: ' .$exception->getMessage(), 500);
+			$this->_show_error('Insert of data into MongoDB failed: ' .$exception->getMessage(), 500);
 		}
 	}
 	
@@ -983,12 +983,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to insert into', 500);
+			$this->_show_error('No Mongo collection selected to insert into', 500);
 		}
 		
 		if (count($insert) === 0 OR ! is_array($insert))
 		{
-			show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
+			$this->_show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
 		
 		$options = array_merge(
@@ -1016,7 +1016,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Insert of data into MongoDB failed: ' . $exception->getMessage(), 500);
+			$this->_show_error('Insert of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 	
@@ -1039,12 +1039,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to update', 500);
+			$this->_show_error('No Mongo collection selected to update', 500);
 		}
 		
 		if (count($this->updates) === 0)
 		{
-			show_error('Nothing to update in Mongo collection or update is not an array', 500);	
+			$this->_show_error('Nothing to update in Mongo collection or update is not an array', 500);	
 		}
 				
 		try
@@ -1063,7 +1063,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Update of data into MongoDB failed: ' . $exception->getMessage(), 500);
+			$this->_show_error('Update of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 	
@@ -1087,12 +1087,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to update', 500);
+			$this->_show_error('No Mongo collection selected to update', 500);
 		}
 		
 		if (count($this->updates) === 0)
 		{
-			show_error('Nothing to update in Mongo collection or update is not an array', 500);	
+			$this->_show_error('Nothing to update in Mongo collection or update is not an array', 500);	
 		}
 				
 		try
@@ -1111,7 +1111,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Update of data into MongoDB failed: ' . $exception->getMessage(), 500);
+			$this->_show_error('Update of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 	
@@ -1423,7 +1423,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to delete from', 500);
+			$this->_show_error('No Mongo collection selected to delete from', 500);
 		}
 		
 		try
@@ -1435,7 +1435,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Delete of data into MongoDB failed: ' . $exception->getMessage(), 500);
+			$this->_show_error('Delete of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}
 	}
 	
@@ -1457,7 +1457,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection selected to delete from', 500);
+			$this->_show_error('No Mongo collection selected to delete from', 500);
 		}
 		
 		if (isset($this->wheres['_id']) AND ! ($this->wheres['_id'] instanceof MongoId))
@@ -1474,7 +1474,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('Delete of data into MongoDB failed: ' . $exception->getMessage(), 500);
+			$this->_show_error('Delete of data into MongoDB failed: ' . $exception->getMessage(), 500);
 		}	
 	}
 	
@@ -1502,7 +1502,7 @@ class Mongo_db {
 		
 		catch (MongoCursorException $exception)
 		{
-			show_error('MongoDB command failed to execute: ' . $exception->getMessage(), 500);
+			$this->_show_error('MongoDB command failed to execute: ' . $exception->getMessage(), 500);
 		}
 	}
 	
@@ -1526,12 +1526,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection specified to add index to', 500);
+			$this->_show_error('No Mongo collection specified to add index to', 500);
 		}
 		
 		if (empty($fields) OR ! is_array($fields))
 		{
-			show_error('Index could not be created to MongoDB Collection because no keys were specified', 500);
+			$this->_show_error('Index could not be created to MongoDB Collection because no keys were specified', 500);
 		}
 
 		foreach ($fields as $field => $value)
@@ -1554,7 +1554,7 @@ class Mongo_db {
 		
 		else
 		{
-			show_error('An error occurred when trying to add an index to MongoDB Collection', 500);
+			$this->_show_error('An error occurred when trying to add an index to MongoDB Collection', 500);
 		}
 	}
 	
@@ -1577,12 +1577,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection specified to remove index from', 500);
+			$this->_show_error('No Mongo collection specified to remove index from', 500);
 		}
 		
 		if (empty($keys) OR ! is_array($keys))
 		{
-			show_error('Index could not be removed from MongoDB Collection because no keys were specified', 500);
+			$this->_show_error('Index could not be removed from MongoDB Collection because no keys were specified', 500);
 		}
 		
 		if ($this->_dbhandle->{$collection}->deleteIndex($keys, $options) === TRUE)
@@ -1592,7 +1592,7 @@ class Mongo_db {
 		}
 		else
 		{
-			show_error('An error occurred when trying to remove an index from MongoDB Collection', 500);
+			$this->_show_error('An error occurred when trying to remove an index from MongoDB Collection', 500);
 		}
 	}
 	
@@ -1614,7 +1614,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection specified to remove all indexes from', 500);
+			$this->_show_error('No Mongo collection specified to remove all indexes from', 500);
 		}
 		$this->_dbhandle->{$collection}->deleteIndexes();
 		$this->_clear($collection, 'remove_all_indexes');
@@ -1639,7 +1639,7 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('No Mongo collection specified to remove all indexes from', 500);
+			$this->_show_error('No Mongo collection specified to remove all indexes from', 500);
 		}
 		
 		return $this->_dbhandle->{$collection}->getIndexInfo();
@@ -1687,7 +1687,7 @@ class Mongo_db {
 	{
 		if (empty($object) OR ! isset($object))
 		{
-			show_error('To use MongoDBRef::get() ala get_dbhandleref() you must pass a valid reference object', 500);
+			$this->_show_error('To use MongoDBRef::get() ala get_dbhandleref() you must pass a valid reference object', 500);
 		}
 		
 			return MongoDBRef::get($this->_dbhandle, $object);
@@ -1713,12 +1713,12 @@ class Mongo_db {
 	{
 		if (empty($collection))
 		{
-			show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
+			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 		
 		if (empty($field) OR ! isset($field))
 		{
-			show_error('To use MongoDBRef::create() ala create_dbhandleref() you must pass a valid field id of the object which to link', 500);
+			$this->_show_error('To use MongoDBRef::create() ala create_dbhandleref() you must pass a valid field id of the object which to link', 500);
 		}
 		
 		$database = ($db_name !== '') ? $db_name : $this->_dbhandle;
@@ -1799,33 +1799,35 @@ class Mongo_db {
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
 		$connection_string = 'mongodb://';
-		
-		if (empty($this->_host))
-		{
-			show_error('The Host must be set to connect to MongoDB', 500);
-		}
-		
+				
 		if (empty($this->_dbname))
 		{
-			show_error('The Database must be set to connect to MongoDB', 500);
+			$this->_show_error('The database name must be set to connect to MongoDB', 500);
 		}
-		
-		if ( ! empty($this->_user) AND ! empty($this->_pass))
+
+		// Build the induvidual connection strings
+		$connections = array();
+		foreach ($this->_host as $host)
 		{
-			$connection_string .= $this->_user . ':' . $this->_pass . '@';
+			$string = '';
+			
+			if ( ! empty($this->_user) AND ! empty($this->_pass))
+			{
+				$string .= $this->_user . ':' . $this->_pass . '@';
+			}
+			
+			$string .= $this->_host;
+			
+			if ($dbhostflag === TRUE)
+			{
+				$string = trim($string) . '/' . $this->_dbname;
+			}
+			
+			$connections[] = $string;
 		}
 		
-		$connection_string .= $this->_host;
-		
-		if ($dbhostflag === TRUE)
-		{
-			$this->_connection_string = trim($connection_string) . '/' . $this->_dbname;
-		}
-		
-		else
-		{
-			$this->_connection_string = trim($connection_string);
-		}
+		$connection_string .= implode(',', $connections);
+		$this->_connection_string = trim($connection_string);
 	}
 	
 	/**
@@ -1888,6 +1890,30 @@ class Mongo_db {
 		if ( ! isset($this->updates[$field]))
 		{
 			$this->updates[$field] = array();
+		}
+	}
+
+	/**
+	 * Show error.
+	 *
+	 * If using CodeIgniter use show_error otherwise throw an exception.
+	 *
+	 * @param string $error_message Error message
+	 * @param int    $response_code Response code 
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _show_error($error_message = '', $response_code = 500)
+	{
+		if ( ! function_exists('show_error')) // If we're not using CodeIgniter throw a normal exception
+		{
+			throw new Exception ($error_message);
+		}
+		
+		else // CodeIgniter $this->_show_error function
+		{
+			$this->_show_error($error_message, $response_code);
 		}
 	}
 	
