@@ -1,0 +1,5 @@
+language: php
+php: 5.3
+before_script: mongo ci_mongo_test --eval 'db.addUser("travis", "travis");'
+notifications:
+  email: false
