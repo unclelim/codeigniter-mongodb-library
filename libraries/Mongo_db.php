@@ -1772,11 +1772,11 @@ class Mongo_db {
 		{
 			if($this->_ci->config->item('mongo_supress_connect_error'))
 			{
-				show_error('Unable to connect to MongoDB', 500);
+				$this->_show_error('Unable to connect to MongoDB', 500);
 			}
 			else
 			{
-				show_error('Unable to connect to MongoDB: ' . $exception->getMessage(), 500);
+				$this->_show_error('Unable to connect to MongoDB: ' . $exception->getMessage(), 500);
 			}
 		}
 	}
