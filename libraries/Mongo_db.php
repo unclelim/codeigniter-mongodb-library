@@ -201,6 +201,7 @@ class Mongo_db {
 		{
 			$this->_ci = NULL;
 		}
+		
 		$this->load();
 	}
 		
@@ -209,15 +210,34 @@ class Mongo_db {
 	 *
 	 * Load config and connect
 	 *
-	 * @param string $config_name Name of the config file
+	 * @param mixed $config Name of the config file or array of params
 	 *
 	 * @access public
 	 * @return void
 	 */	
-	public function load($config_name = 'default')
+	public function load($config = 'default')
 	{
-		$this->ci->config->load($this->config_file);
-		$this->config_data = $this->ci->config->item($config_name);
+		// Try and load a config file if CodeIgniter
+		if ($this->_ci)
+		{
+			$this->_ci->config->load($this->config_file);
+		}
+		
+		if (is_array($config))
+		{
+			$this->config_data = $config;
+		}
+		
+		elseif (is_string($config) && $this->_ci)
+		{
+			$this->config_data = $this->_ci->config->item($config);
+		}
+		
+		else
+		{
+			$this->_show_error('No config name passed or config variables', 500);
+		}
+		
 		$this->connection_string();
 		$this->connect();
 	}	
@@ -1778,7 +1798,7 @@ class Mongo_db {
 		} 
 		catch (MongoConnectionException $exception)
 		{
-			if($this->_ci->config->item('mongo_supress_connect_error'))
+			if($this->_ci && $this->_ci->config->item('mongo_supress_connect_error'))
 			{
 				$this->_show_error('Unable to connect to MongoDB', 500);
 			}
