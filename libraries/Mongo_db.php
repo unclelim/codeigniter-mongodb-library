@@ -68,13 +68,6 @@ class Mongo_db {
 	 */
 	private $_host = 'localhost';
 	
-	/**
-	 * Database host port.
-	 * 
-	 * @var mixed
-	 * @access private
-	 */
-	private $_port = 27017;
 	
 	/**
 	 * Database user.
