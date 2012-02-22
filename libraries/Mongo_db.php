@@ -200,7 +200,7 @@ class Mongo_db {
 			show_error('The MongoDB PECL extension has not been installed or enabled', 500);
 		}
 		
-		$this->ci = get_instance();
+		$this->_ci = get_instance();
 		$this->load();
 	}
 	
@@ -216,10 +216,10 @@ class Mongo_db {
 	 */	
 	public function load($config_name = 'default')
 	{
-		$this->CI->config->load($this->config_file);
-		$this->config_data = $this->CI->config->item($config_name);
-		$this->connection_string();
-		$this->connect();
+		$this->_ci->config->load($this->_config_file);
+		$this->_config_data = $this->_ci->config->item($config_name);
+		$this->_connection_string();
+		$this->_connect();
 	}	
 
 	/**
@@ -244,9 +244,9 @@ class Mongo_db {
 		try
 		{
 			// Regenerate the connection string and reconnect
-			$this->config_data['mongo_database'] = $database;
-			$this->connection_string();
-			$this->connect();
+			$this->_config_data['mongo_database'] = $database;
+			$this->_connection_string();
+			$this->_connect();
 		}
 		
 		catch (Exception $exception)
@@ -1001,7 +1001,7 @@ class Mongo_db {
 		
 		$options = array_merge(
 					array(
-						$this->query_safety => TRUE
+						$this->_query_safety => TRUE
 					),
 					$options
 				);
@@ -1748,7 +1748,7 @@ class Mongo_db {
 	 */
 	public function last_query()
 	{
-		return $_query_log;
+		return $this->_query_log;
 	}
 		
 	/**
@@ -1797,14 +1797,14 @@ class Mongo_db {
 	 */
 	private function _connection_string() 
 	{		
-		$this->host = trim($this->config_data['mongo_hostbase']);
-		$this->user = trim($this->config_data['mongo_username']);
-		$this->pass = trim($this->config_data['mongo_password']);
-		$this->dbname = trim($this->config_data['mongo_database']);
-		$this->persist = trim($this->config_data['mongo_persist']);
-		$this->persist_key = trim($this->config_data['mongo_persist_key']);
-		$this->query_safety = trim($this->config_data['mongo_query_safety']);
-		$dbhostflag = (bool) $this->config_data['mongo_host_db_flag'];
+		$this->_host = trim($this->_config_data['mongo_hostbase']);
+		$this->_user = trim($this->_config_data['mongo_username']);
+		$this->_pass = trim($this->_config_data['mongo_password']);
+		$this->_dbname = trim($this->_config_data['mongo_database']);
+		$this->_persist = trim($this->_config_data['mongo_persist']);
+		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
+		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
+		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
 		$connection_string = 'mongodb://';
 		
@@ -1848,12 +1848,11 @@ class Mongo_db {
 			'collection'	=> $collection,
 			'action' 		=> $action,
 			'wheres' 		=> $this->wheres,
-			'inserts'		=> $insert,
 			'updates'		=> $this->updates,
-			'selects'		=> $this->selects,
-			'limit'	 		=> $this->limit,
-			'offset' 		=> $this->offset,
-			'sorts'	 		=> $this->sorts
+			'selects'		=> $this->_selects,
+			'limit'	 		=> $this->_limit,
+			'offset' 		=> $this->_offset,
+			'sorts'	 		=> $this->_sorts
 		);
 			
 		$this->_selects	= array();
