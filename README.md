@@ -1,3 +1,11 @@
+# Version 2 of this library is being actively developed
+
+### Please visit [https://github.com/alexbilbie/codeigniter-mongodb-library/tree/v2](https://github.com/alexbilbie/codeigniter-mongodb-library/tree/v2)
+
+### Please ensure any new bugs have been tested on this new version
+
+---
+
 # CodeIgniter MongoDB Library
 
 This is an active record inspired CodeIgniter library to integrate a MongoDB database into your application.
