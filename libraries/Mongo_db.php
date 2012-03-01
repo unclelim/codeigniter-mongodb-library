@@ -109,6 +109,14 @@ class Mongo_db {
 	private $_persist_key = 'ci_mongo';
 	
 	/**
+	 * Use replica set.
+	 * 
+	 * @var FALSE|string
+	 * @access private
+	 */
+	private $_replicaSet = FALSE;
+	
+	/**
 	 * Query safety value.
 	 * 
 	 * @var string
@@ -1821,41 +1829,40 @@ class Mongo_db {
 		$this->_user = trim($this->_config_data['mongo_username']);
 		$this->_pass = trim($this->_config_data['mongo_password']);
 		$this->_dbname = trim($this->_config_data['mongo_database']);
-		$this->_persist = trim($this->_config_data['mongo_persist']);
+		$this->_persist = $this->_config_data['mongo_persist'];
 		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
+		$this->_replicaSet = $this->_config_data['replica_set'];
 		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
 		$connection_string = 'mongodb://';
 				
+		if (empty($this->_host))
+		{
+			$this->_show_error('The Host must be set to connect to MongoDB', 500);
+		}
+		
 		if (empty($this->_dbname))
 		{
 			$this->_show_error('The database name must be set to connect to MongoDB', 500);
 		}
-
-		// Build the induvidual connection strings
-		$connections = array();
-		foreach ($this->_host as $host)
+		
+		if ( ! empty($this->_user) AND ! empty($this->_pass))
 		{
-			$string = '';
-			
-			if ( ! empty($this->_user) AND ! empty($this->_pass))
-			{
-				$string .= $this->_user . ':' . $this->_pass . '@';
-			}
-			
-			$string .= $this->_host;
-			
-			if ($dbhostflag === TRUE)
-			{
-				$string = trim($string) . '/' . $this->_dbname;
-			}
-			
-			$connections[] = $string;
+			$connection_string .= $this->_user . ':' . $this->_pass . '@';
 		}
 		
-		$connection_string .= implode(',', $connections);
-		$this->_connection_string = trim($connection_string);
+		$connection_string .= $this->_host;
+		
+		if ($dbhostflag === TRUE)
+		{
+			$this->_connection_string = trim($connection_string) . '/' . $this->_dbname;
+		}
+		
+		else
+		{
+			$this->_connection_string = trim($connection_string);
+		}
 	}
 	
 	/**
