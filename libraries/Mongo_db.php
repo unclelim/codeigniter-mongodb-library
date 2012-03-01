@@ -1946,9 +1946,9 @@ class Mongo_db {
 			throw new Exception ($error_message);
 		}
 		
-		else // CodeIgniter $this->_show_error function
+		else // CodeIgniter show_error() function
 		{
-			$this->_show_error($error_message, $response_code);
+			show_error($error_message, $response_code);
 		}
 	}
 	
