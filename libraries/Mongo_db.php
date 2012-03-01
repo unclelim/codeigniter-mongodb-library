@@ -114,7 +114,7 @@ class Mongo_db {
 	 * @var FALSE|string
 	 * @access private
 	 */
-	private $_replicaSet = FALSE;
+	private $_replica_set = FALSE;
 	
 	/**
 	 * Query safety value.
@@ -1793,9 +1793,15 @@ class Mongo_db {
 	private function _connect()
 	{
 		$options = array();
+		
 		if ($this->_persist === TRUE)
 		{
-			$options['persist'] = isset($this->_persist_key) AND ! empty($this->_persist_key) ? $this->_persist_key : 'ci_mongo_persist';
+			$options['persist'] = $this->_persist_key;
+		}
+		
+		if ($this->_replica_set !== FALSE)
+		{
+			$options['replicaSet'] = $this->_replica_set;
 		}
 		
 		try
@@ -1831,7 +1837,7 @@ class Mongo_db {
 		$this->_dbname = trim($this->_config_data['mongo_database']);
 		$this->_persist = $this->_config_data['mongo_persist'];
 		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
-		$this->_replicaSet = $this->_config_data['replica_set'];
+		$this->_replica_set = $this->_config_data['replica_set'];
 		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
