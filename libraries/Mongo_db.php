@@ -228,7 +228,7 @@ class Mongo_db {
 		// Try and load a config file if CodeIgniter
 		if ($this->_ci)
 		{
-			$this->_ci->config->load($this->config_file);
+			$this->_ci->config->load($this->_config_file);
 		}
 		
 		if (is_array($config))
