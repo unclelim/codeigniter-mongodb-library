@@ -228,17 +228,17 @@ class Mongo_db {
 		// Try and load a config file if CodeIgniter
 		if ($this->_ci)
 		{
-			$this->_ci->config->load($this->_config_file);
+			$this->_config_data = $this->_ci->config->load($this->_config_file);
 		}
 		
 		if (is_array($config))
 		{
-			$this->config_data = $config;
+			$this->_config_data = $config;
 		}
 		
 		elseif (is_string($config) && $this->_ci)
 		{
-			$this->config_data = $this->_ci->config->item($config);
+			$this->_config_data = $this->_ci->config->item($config);
 		}
 		
 		else
@@ -246,8 +246,8 @@ class Mongo_db {
 			$this->_show_error('No config name passed or config variables', 500);
 		}
 		
-		$this->connection_string();
-		$this->connect();
+		$this->_connection_string();
+		$this->_connect();
 	}	
 
 	/**
