@@ -1,10 +1,19 @@
 # CodeIgniter MongoDB Library
+## (No longer CodeIgniter specific - use in any PHP application!)
 
-This is an active record inspired CodeIgniter library to integrate a MongoDB database into your application.
+This is a query builder inspired CodeIgniter library to integrate a MongoDB database into your application.
+
+### Using with CodeIgniter:
 
 1. Add the file Mongo_db.php to your /application/libraries folder.
 2. Add the file mongodb.php to your /application/config folder.
 3. Update the config file.
+
+### Using in a non-CodeIgniter app
+
+1. Put the library in an appropriate folder
+2. Load the library with `require_once`
+3. Pass an array into the `load()` method with the parameters from the config/mongodb.php file to connect to the database
 
 You can now autoload the library or include it in one of your controllers at run time.
 
@@ -20,7 +29,7 @@ You can interact with the database using many of the active record functions tha
 	
 The result will be an object containing matching documents.
 
-## Select Functions
+### Select Functions
 
 * `select`					Get select fields from returned documents
 * `where`						Where section of the query
@@ -36,11 +45,11 @@ The result will be an object containing matching documents.
 * `order_by`					Order the results
 * `limit`						Limit the number of returned results
 
-## Insert Function
+### Insert Function
 
 * `insert`					Insert a new document into a collection
 
-## Update Functions
+### Update Functions
 
 * `inc`						Increments the value of a field
 * `dec`						Decrements the value of a field
@@ -54,21 +63,21 @@ The result will be an object containing matching documents.
 * `update`					Update a single document in a collection
 * `update_all`				Update all documents in a collection
 
-## Delete Functions
+### Delete Functions
 
 * `delete`					Delete a single document in a collection
 * `delete_all`				Delete all documents in a collection
 
-## Index Functions
+### Index Functions
 
 * `set_index`				Creates a new index
 * `delete_index`			Deletes an index
 
-## Database Functions
+### Database Functions
 
 * `drop_db`					Drops a database
 * `switch_db`				Switch to a different database
 
-## Collection Functions
+### Collection Functions
 
 * `drop_collection`		Drops a collection
