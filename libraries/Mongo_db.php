@@ -708,14 +708,30 @@ class Mongo_db {
 	 *
 	 * @param string $field  Name of the field
 	 * @param array  $coords Array of coordinates
+	 * @param integer $distance  Value of the maximum distance to search
+	 * @param boolean $spherical Use the $nearSphere setting instead of just $near
 	 *
 	 * @access public
 	 * @return object
 	 */
-	function where_near($field = '', $coords = array())
+	function where_near($field = '', $coords = array(), $distance = null, $spherical = FALSE)
 	{
 		$this->_where_init($field);
-		$this->wheres[$field]['$near'] = $coords;
+		
+		if ($spherical)
+		{
+			$this->wheres[$field]['$nearSphere'] = $coords;
+		}
+		else
+		{
+			$this->wheres[$field]['$near'] = $coords;
+		}
+
+		if (isset($distance) && is_integer($distance))
+		{
+			$this->wheres[$field]['$maxDistance'] = $distance;
+		}
+		
 		return $this;
 	}
 	
