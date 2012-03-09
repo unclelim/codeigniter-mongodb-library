@@ -255,7 +255,7 @@ class Mongo_db
 	 * Switch database.
 	 * 
 	 * <code>
-	 * $this->mongo_db->switch_dbhandle('foobar');
+	 * $this->mongo_db->switch_db('foobar');
 	 * </code>
 	 *
 	 * @param string $database Database name
@@ -288,7 +288,7 @@ class Mongo_db
 	* Drop a database.
 	* 
 	* <code>
-	* $this->mongo_db->drop_dbhandle("foobar");
+	* $this->mongo_db->drop_db("foobar");
 	* </code>
 	*
 	* @param string $database Database name
