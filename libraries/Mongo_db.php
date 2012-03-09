@@ -714,7 +714,7 @@ class Mongo_db {
 	 * @access public
 	 * @return object
 	 */
-	function where_near($field = '', $coords = array(), $distance = null, $spherical = FALSE)
+	function where_near($field = '', $coords = array(), $distance = NULL, $spherical = FALSE)
 	{
 		$this->_where_init($field);
 		
@@ -727,7 +727,7 @@ class Mongo_db {
 			$this->wheres[$field]['$near'] = $coords;
 		}
 
-		if (isset($distance) && is_integer($distance))
+		if ($distance !== NULL)
 		{
 			$this->wheres[$field]['$maxDistance'] = $distance;
 		}
