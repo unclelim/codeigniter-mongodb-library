@@ -706,10 +706,10 @@ class Mongo_db {
 	 * $this->mongo_db->where_near('foo', array('50','50'))->get('foobar');
 	 * </code>
 	 *
-	 * @param string $field  Name of the field
-	 * @param array  $coords Array of coordinates
+	 * @param string  $field     Name of the field
+	 * @param array   $coords    Array of coordinates
 	 * @param integer $distance  Value of the maximum distance to search
-	 * @param boolean $spherical Use the $nearSphere setting instead of just $near
+	 * @param boolean $spherical Treat the Earth as spherical instead of flat (useful when searching over large distances)
 	 *
 	 * @access public
 	 * @return object
