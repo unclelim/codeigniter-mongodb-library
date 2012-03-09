@@ -1722,7 +1722,7 @@ class Mongo_db {
 	}
 
 	/**
-	 * Get Database Reference
+	 * Get database reference
 	 *
 	 * Get mongo object from database reference using MongoDBRef
 	 *
@@ -1735,18 +1735,18 @@ class Mongo_db {
 	 * @access public
 	 * @return array|object
 	 */    
-	public function get_dbhandleref($object)
+	public function get_dbref($object)
 	{
-		if (empty($object) OR ! isset($object))
+		if (empty($object) || ! isset($object))
 		{
-			$this->_show_error('To use MongoDBRef::get() ala get_dbhandleref() you must pass a valid reference object', 500);
+			$this->_show_error('To use MongoDBRef::get() ala get_dbref() you must pass a valid reference object', 500);
 		}
 		
 			return MongoDBRef::get($this->_dbhandle, $object);
 	}
 
 	/**
-	 * create_dbhandleref.
+	 * Create database reference.
 	 * 
 	 * Create mongo dbref object to store later
 	 * 
@@ -1761,16 +1761,16 @@ class Mongo_db {
 	 * @access public
 	 * @return array|object
 	 */
-	public function create_dbhandleref($collection = '', $field = '', $db_name = '')
+	public function create_dbref($collection = '', $field = '', $db_name = '')
 	{
 		if (empty($collection))
 		{
 			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 		
-		if (empty($field) OR ! isset($field))
+		if (empty($field) || ! isset($field))
 		{
-			$this->_show_error('To use MongoDBRef::create() ala create_dbhandleref() you must pass a valid field id of the object which to link', 500);
+			$this->_show_error('To use MongoDBRef::create() ala create_dbref() you must pass a valid field id of the object which to link', 500);
 		}
 		
 		$database = ($db_name !== '') ? $db_name : $this->_dbhandle;
