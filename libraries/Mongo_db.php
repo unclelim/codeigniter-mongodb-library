@@ -715,7 +715,7 @@ class Mongo_db {
 	function where_near($field = '', $coords = array())
 	{
 		$this->_where_init($field);
-		$this->where[$field]['$near'] = $coords;
+		$this->wheres[$field]['$near'] = $coords;
 		return $this;
 	}
 	
@@ -971,7 +971,7 @@ class Mongo_db {
 		
 		$options = array_merge(
 					array(
-						$this->query_safety => TRUE
+						$this->_query_safety => TRUE
 					),
 					$options
 				);
