@@ -714,7 +714,7 @@ class Mongo_db {
 	 */
 	function where_near($field = '', $coords = array())
 	{
-		$this->__where_init($field);
+		$this->_where_init($field);
 		$this->where[$field]['$near'] = $coords;
 		return $this;
 	}
