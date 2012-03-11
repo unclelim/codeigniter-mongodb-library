@@ -186,6 +186,14 @@ class Mongo_db {
 	private $_offset = 0;
 	
 	/**
+	 * Group iterator inital counters.
+	 *
+	 * @var array
+	 * @access private
+	 */
+	private $_group_iterators = array();
+	
+	/**
 	 * Constructor
 	 * 
 	 * Automatically check if the Mongo PECL extension has been installed/enabled.
@@ -838,6 +846,69 @@ class Mongo_db {
 		}
 		
 		return $this;
+	}
+	
+	public function initial($field = array(), $value = 0)
+	{
+		if (is_array($field))
+		{
+			$this->_group_iterators = $field;
+		}
+		
+		else
+		{
+			$this->_group_iterators[$field] = $value;
+		}
+		
+		return $this;
+	}
+	
+	public function keys($fields = array())
+	{
+		if (is_array($fields))
+		{
+			foreach ($fields as $field)
+			{
+				$this->_group_keys[$field] = 1;
+			}
+		}
+		
+		else
+		{
+			$this->_group_keys = new MongoCode((string) $fields);
+		}
+				
+		return $this;
+	}
+	
+	public function reduce($javascript = '')
+	{
+		$this->_reduce_code = $javascript;
+		return $this;
+	}
+	
+	public function group($collection = '')
+	{
+		$options = array();
+		if (count($this->wheres) > 0)
+		{
+			$options['condition'] = $this->wheres;
+		}
+	
+		try
+		{
+			$results = $this->_dbhandle
+									->{$collection}
+									->group($this->_group_keys, $this->_group_iterators, $this->_reduce_code, $options);
+			
+			$this->_clear($collection, 'group');
+			return $results;
+		}
+		
+		catch (Exception $e)
+		{
+			$this->_show_error($exception->getMessage(), 500);
+		}
 	}
 	
 	/**
@@ -1896,6 +1967,7 @@ class Mongo_db {
 		$this->_limit	= 999999;
 		$this->_offset	= 0;
 		$this->_sorts	= array();
+		$this->_group_iterators = array();
 	}
 
 	/**
