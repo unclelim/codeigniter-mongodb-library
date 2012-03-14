@@ -1854,7 +1854,7 @@ class Mongo_db
 		$this->_dbname = trim($this->_config_data['mongo_database']);
 		$this->_persist = $this->_config_data['mongo_persist'];
 		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
-		$this->_replica_set = $this->_config_data['replica_set'];
+		$this->_replica_set = $this->_config_data['mongo_replica_set'];
 		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
