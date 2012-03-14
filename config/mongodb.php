@@ -12,7 +12,7 @@
  * ['mongo_persist_key'] The persistant connection key
  * ['replica_set'] If connecting to a replica set, the name of the set. FALSE if not.
  * ['mongo_query_safety'] Safety level of write queries. "safe" = committed in memory, "fsync" = committed to harddisk
- * ['mongo_supress_connect_error'] If the driver can't connect by default it will throw an error which dislays the username and password used to connect. Set to TRUE to hide these details.
+ * ['mongo_suppress_connect_error'] If the driver can't connect by default it will throw an error which dislays the username and password used to connect. Set to TRUE to hide these details.
  * ['mongo_host_db_flag']   If running in auth mode and the user does not have global read/write then set this to true
  */
 
@@ -24,5 +24,5 @@ $config['default']['mongo_persist']  = TRUE;
 $config['default']['mongo_persist_key']	 = 'ci_persist';
 $config['default']['replica_set']  = FALSE;
 $config['default']['mongo_query_safety'] = 'safe';
-$config['default']['mongo_supress_connect_error'] = TRUE;
+$config['default']['mongo_suppress_connect_error'] = TRUE;
 $config['default']['mongo_host_db_flag']   = FALSE;
