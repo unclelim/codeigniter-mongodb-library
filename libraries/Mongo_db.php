@@ -1829,7 +1829,7 @@ class Mongo_db
 		} 
 		catch (MongoConnectionException $exception)
 		{
-			if($this->_ci && $this->_ci->config->item('mongo_supress_connect_error'))
+			if($this->_ci && $this->_ci->config->item('mongo_suppress_connect_error'))
 			{
 				$this->_show_error('Unable to connect to MongoDB', 500);
 			}
@@ -1854,7 +1854,7 @@ class Mongo_db
 		$this->_dbname = trim($this->_config_data['mongo_database']);
 		$this->_persist = $this->_config_data['mongo_persist'];
 		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
-		$this->_replica_set = $this->_config_data['replica_set'];
+		$this->_replica_set = $this->_config_data['mongo_replica_set'];
 		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
