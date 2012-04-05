@@ -140,7 +140,7 @@ class Mongo_db {
 	 * @var array
 	 * @access public
 	 */
-	public  $wheres = array();
+	public $wheres = array();
 	
 	/**
 	 * Sorts array.
@@ -167,7 +167,6 @@ class Mongo_db {
 	 * @access private
 	 */
 	private $_limit = 999999;
-
 	
 	/**
 	 * Query log.
@@ -192,6 +191,22 @@ class Mongo_db {
 	 * @access private
 	 */
 	private $_group_iterators = array();
+	
+	/**
+	 * JavaScript code used in by group() and mapreduce.
+	 *
+	 * @var string
+	 * @access private
+	 */
+	private $_reduce_code = '';
+	
+	/**
+	 * Group keys.
+	 *
+	 * @var array
+	 * @access private
+	 */	
+	private $_group_keys = array();
 	
 	/**
 	 * Constructor
@@ -806,7 +821,7 @@ class Mongo_db {
 	 * Limit the result set to $limit number of documents
 	 *
 	 * <code>
-	 * $this->mongo_db->_limit($x);
+	 * $this->mongo_db->limit($x);
 	 * </code>
 	 *
 	 * @param int $limit The maximum number of documents that will be returned
@@ -830,7 +845,7 @@ class Mongo_db {
 	 * Offset the result set to skip $x number of documents
 	 *
 	 * <code>
-	 * $this->mongo_db->_offset($x);
+	 * $this->mongo_db->offset($x);
 	 * </code>
 	 *
 	 * @param int $offset The number of documents to offset the search by
@@ -848,21 +863,50 @@ class Mongo_db {
 		return $this;
 	}
 	
-	public function initial($field = array(), $value = 0)
+	/**
+	 * Initial.
+	 *
+	 * Set the initial values of the group iterators
+	 *
+	 * <code>
+	 * $this->mongo_db->initial(array('foo' => 0));
+	 * </code>
+	 *
+	 * @param array|string $fields Either an associative array or a field name as a string
+	 * @param int          $value  The initial value of $fields (if passed as a string)
+	 *
+	 * @access public
+	 * @return object
+	 */
+	public function initial($fields = array(), $value = 0)
 	{
-		if (is_array($field))
+		if (is_array($fields))
 		{
-			$this->_group_iterators = $field;
+			$this->_group_iterators = $fields;
 		}
 		
 		else
 		{
-			$this->_group_iterators[$field] = $value;
+			$this->_group_iterators[$fields] = $value;
 		}
 		
 		return $this;
 	}
 	
+	/**
+	 * Keys.
+	 *
+	 * Sets the fields to be returned
+	 *
+	 * <code>
+	 * $this->keys->array('foo', 'bar');
+	 * </code>
+	 *
+	 * @param array|strong $fields An array of fields to be returned or JavaScript function as a string
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function keys($fields = array())
 	{
 		if (is_array($fields))
@@ -880,13 +924,41 @@ class Mongo_db {
 				
 		return $this;
 	}
-	
+
+	/**
+	 * Reduce.
+	 *
+	 * Sets the reduction JavaScript function
+	 *
+	 * <code>
+	 * $this->keys->reduce('function(k, v){ ... }');
+	 * </code>
+	 *
+	 * @param strong $javascript The JavaScript reduction function
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function reduce($javascript = '')
 	{
 		$this->_reduce_code = $javascript;
 		return $this;
 	}
 	
+	/**
+	 * Reduce.
+	 *
+	 * Sets the reduction JavaScript function
+	 *
+	 * <code>
+	 * $this->keys->reduce('function(k, v){ ... }');
+	 * </code>
+	 *
+	 * @param strong $javascript The JavaScript reduction function
+	 *
+	 * @access public
+	 * @return object
+	 */
 	public function group($collection = '')
 	{
 		$options = array();
