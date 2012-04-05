@@ -886,19 +886,20 @@ class Mongo_db
 	* $this->mongo_db->get('foo');
 	* </code>
 	*
-	* @param string $collection Name of the collection
+	* @param string $collection    Name of the collection
+	* @param bool   $return_cursor Return the native document cursor
 	*
 	* @access public
 	* @return array
 	*/
-	public function get($collection = '')
+	public function get($collection = '', $return_cursor = FALSE)
 	{
 		if (empty($collection))
 		{
 			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 
-		$documents = $this->_dbhandle
+		$cursor = $this->_dbhandle
 							->{$collection}
 							->find($this->wheres, $this->_selects)
 							->limit($this->_limit)
@@ -907,14 +908,20 @@ class Mongo_db
 		
 		// Clear
 		$this->_clear($collection, 'get');
+
+		// Return the raw cursor if wanted
+		if ($return_cursor === TRUE)
+		{
+			return $cursor;
+		}
 		
-		$returns = array();
+		$documents = array();
 		
-		while ($documents->hasNext())
+		while ($cursor->hasNext())
 		{
 			try
 			{
-				$returns[] = $documents->getNext();
+				$returns[] = $cursor->getNext();
 			}
 			
 			catch (MongoCursorException $exception)
@@ -923,7 +930,7 @@ class Mongo_db
 			}
 		}
 			
-		return $returns;
+		return $documents;
 	}
 	
 	/**
