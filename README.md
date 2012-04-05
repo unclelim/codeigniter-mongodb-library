@@ -20,7 +20,12 @@ You can interact with the database using many of the active record functions tha
 
 	$this->mongo_db
 		->where_gte('age', 18)
-		->where_in('country', array('England', 'Scotland', 'Wales', 'Ireland'))
+		->where_in('country', array(
+			'England',
+			'Scotland',
+			'Wales',
+			'Ireland'
+		))
 		->where(array(
 			'likes_whisky' => TRUE
 		))
