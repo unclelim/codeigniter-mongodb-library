@@ -1046,7 +1046,7 @@ class Mongo_db
 			$this->_show_error('No Mongo collection selected to insert into', 500);
 		}
 		
-		if (count($insert) === 0 OR ! is_array($insert))
+		if (count($insert) === 0 || ! is_array($insert))
 		{
 			$this->_show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
@@ -1060,18 +1060,9 @@ class Mongo_db
 		
 		try
 		{
-			$this->_dbhandle
-				->{$collection}
-				->batchInsert($insert, $options);
-			
-			if (isset($insert['_id']))
-			{
-				return $insert['_id'];
-			}
-			else
-			{
-				return FALSE;
-			}
+			return $this->_dbhandle
+							->{$collection}
+							->batchInsert($insert, $options);			
 		}
 		
 		catch (MongoCursorException $exception)
