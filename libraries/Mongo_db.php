@@ -10,7 +10,8 @@
  * @version   Release: 2.0
  * @link      https://github.com/alexbilbie/codeigniter-mongodb-library
  */
-class Mongo_db {
+class Mongo_db
+{
 	
 	/**
 	 * CI instance.
@@ -277,7 +278,7 @@ class Mongo_db {
 	 * Switch database.
 	 * 
 	 * <code>
-	 * $this->mongo_db->switch_dbhandle('foobar');
+	 * $this->mongo_db->switch_db('foobar');
 	 * </code>
 	 *
 	 * @param string $database Database name
@@ -310,7 +311,7 @@ class Mongo_db {
 	* Drop a database.
 	* 
 	* <code>
-	* $this->mongo_db->drop_dbhandle("foobar");
+	* $this->mongo_db->drop_db("foobar");
 	* </code>
 	*
 	* @param string $database Database name
@@ -729,16 +730,32 @@ class Mongo_db {
 	 * $this->mongo_db->where_near('foo', array('50','50'))->get('foobar');
 	 * </code>
 	 *
-	 * @param string $field  Name of the field
-	 * @param array  $coords Array of coordinates
+	 * @param string  $field     Name of the field
+	 * @param array   $coords    Array of coordinates
+	 * @param integer $distance  Value of the maximum distance to search
+	 * @param boolean $spherical Treat the Earth as spherical instead of flat (useful when searching over large distances)
 	 *
 	 * @access public
 	 * @return object
 	 */
-	function where_near($field = '', $coords = array())
+	function where_near($field = '', $coords = array(), $distance = NULL, $spherical = FALSE)
 	{
-		$this->__where_init($field);
-		$this->where[$field]['$near'] = $coords;
+		$this->_where_init($field);
+		
+		if ($spherical)
+		{
+			$this->wheres[$field]['$nearSphere'] = $coords;
+		}
+		else
+		{
+			$this->wheres[$field]['$near'] = $coords;
+		}
+
+		if ($distance !== NULL)
+		{
+			$this->wheres[$field]['$maxDistance'] = $distance;
+		}
+		
 		return $this;
 	}
 	
@@ -1012,19 +1029,20 @@ class Mongo_db {
 	* $this->mongo_db->get('foo');
 	* </code>
 	*
-	* @param string $collection Name of the collection
+	* @param string $collection    Name of the collection
+	* @param bool   $return_cursor Return the native document cursor
 	*
 	* @access public
 	* @return array
 	*/
-	public function get($collection = '')
+	public function get($collection = '', $return_cursor = FALSE)
 	{
 		if (empty($collection))
 		{
 			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 
-		$documents = $this->_dbhandle
+		$cursor = $this->_dbhandle
 							->{$collection}
 							->find($this->wheres, $this->_selects)
 							->limit($this->_limit)
@@ -1033,14 +1051,20 @@ class Mongo_db {
 		
 		// Clear
 		$this->_clear($collection, 'get');
+
+		// Return the raw cursor if wanted
+		if ($return_cursor === TRUE)
+		{
+			return $cursor;
+		}
 		
-		$returns = array();
+		$documents = array();
 		
-		while ($documents->hasNext())
+		while ($cursor->hasNext())
 		{
 			try
 			{
-				$returns[] = $documents->getNext();
+				$returns[] = $cursor->getNext();
 			}
 			
 			catch (MongoCursorException $exception)
@@ -1049,7 +1073,7 @@ class Mongo_db {
 			}
 		}
 			
-		return $returns;
+		return $documents;
 	}
 	
 	/**
@@ -1114,7 +1138,7 @@ class Mongo_db {
 		
 		$options = array_merge(
 					array(
-						$this->query_safety => TRUE
+						$this->_query_safety => TRUE
 					),
 					$options
 				);
@@ -1165,7 +1189,7 @@ class Mongo_db {
 			$this->_show_error('No Mongo collection selected to insert into', 500);
 		}
 		
-		if (count($insert) === 0 OR ! is_array($insert))
+		if (count($insert) === 0 || ! is_array($insert))
 		{
 			$this->_show_error('Nothing to insert into Mongo collection or insert is not an array', 500);
 		}
@@ -1179,18 +1203,9 @@ class Mongo_db {
 		
 		try
 		{
-			$this->_dbhandle
-				->{$collection}
-				->batchInsert($insert, $options);
-			
-			if (isset($insert['_id']))
-			{
-				return $insert['_id'];
-			}
-			else
-			{
-				return FALSE;
-			}
+			return $this->_dbhandle
+							->{$collection}
+							->batchInsert($insert, $options);			
 		}
 		
 		catch (MongoCursorException $exception)
@@ -1849,7 +1864,7 @@ class Mongo_db {
 	}
 
 	/**
-	 * Get Database Reference
+	 * Get database reference
 	 *
 	 * Get mongo object from database reference using MongoDBRef
 	 *
@@ -1862,18 +1877,18 @@ class Mongo_db {
 	 * @access public
 	 * @return array|object
 	 */    
-	public function get_dbhandleref($object)
+	public function get_dbref($object)
 	{
-		if (empty($object) OR ! isset($object))
+		if (empty($object) || ! isset($object))
 		{
-			$this->_show_error('To use MongoDBRef::get() ala get_dbhandleref() you must pass a valid reference object', 500);
+			$this->_show_error('To use MongoDBRef::get() ala get_dbref() you must pass a valid reference object', 500);
 		}
 		
 			return MongoDBRef::get($this->_dbhandle, $object);
 	}
 
 	/**
-	 * create_dbhandleref.
+	 * Create database reference.
 	 * 
 	 * Create mongo dbref object to store later
 	 * 
@@ -1888,16 +1903,16 @@ class Mongo_db {
 	 * @access public
 	 * @return array|object
 	 */
-	public function create_dbhandleref($collection = '', $field = '', $db_name = '')
+	public function create_dbref($collection = '', $field = '', $db_name = '')
 	{
 		if (empty($collection))
 		{
 			$this->_show_error('In order to retrieve documents from MongoDB, a collection name must be passed', 500);
 		}
 		
-		if (empty($field) OR ! isset($field))
+		if (empty($field) || ! isset($field))
 		{
-			$this->_show_error('To use MongoDBRef::create() ala create_dbhandleref() you must pass a valid field id of the object which to link', 500);
+			$this->_show_error('To use MongoDBRef::create() ala create_dbref() you must pass a valid field id of the object which to link', 500);
 		}
 		
 		$database = ($db_name !== '') ? $db_name : $this->_dbhandle;
@@ -1955,7 +1970,7 @@ class Mongo_db {
 		} 
 		catch (MongoConnectionException $exception)
 		{
-			if($this->_ci && $this->_ci->config->item('mongo_supress_connect_error'))
+			if($this->_ci && $this->_ci->config->item('mongo_suppress_connect_error'))
 			{
 				$this->_show_error('Unable to connect to MongoDB', 500);
 			}
@@ -1980,7 +1995,7 @@ class Mongo_db {
 		$this->_dbname = trim($this->_config_data['mongo_database']);
 		$this->_persist = $this->_config_data['mongo_persist'];
 		$this->_persist_key = trim($this->_config_data['mongo_persist_key']);
-		$this->_replica_set = $this->_config_data['replica_set'];
+		$this->_replica_set = $this->_config_data['mongo_replica_set'];
 		$this->_query_safety = trim($this->_config_data['mongo_query_safety']);
 		$dbhostflag = (bool) $this->_config_data['mongo_host_db_flag'];
 		
