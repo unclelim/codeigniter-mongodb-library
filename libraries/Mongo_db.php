@@ -2110,7 +2110,7 @@ class Mongo_db
 	{
 		if ( ! function_exists('show_error')) // If we're not using CodeIgniter throw a normal exception
 		{
-			throw new Exception ($error_message);
+			throw new Mongo_db_exception ($error_message);
 		}
 		
 		else // CodeIgniter show_error() function
