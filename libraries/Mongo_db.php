@@ -10,6 +10,7 @@
  * @version   Release: 2.0
  * @link      https://github.com/alexbilbie/codeigniter-mongodb-library
  */
+
 class Mongo_db
 {
 	
