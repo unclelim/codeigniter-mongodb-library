@@ -19,12 +19,17 @@ You can now autoload the library or include it in one of your controllers at run
 You can interact with the database using many of the active record functions that CodeIgniter provides.
 
 	$this->mongo_db
-	->where_gte('age', 18)
-	->where(array(
-		'country' => 'UK',
-		'like_whisky' => TRUE
-	))
-	->get('people');
+		->where_gte('age', 18)
+		->where_in('country', array(
+			'England',
+			'Scotland',
+			'Wales',
+			'Ireland'
+		))
+		->where(array(
+			'likes_whisky' => TRUE
+		))
+		->get('people');
 	
 The result will be an object containing matching documents.
 
