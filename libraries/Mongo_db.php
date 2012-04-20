@@ -230,14 +230,13 @@ class Mongo_db
 		if (function_exists('get_instance'))
 		{
 			$this->_ci = get_instance();
+			$this->load(); // Autoload if in CI environment
 		}
 		
 		else
 		{
 			$this->_ci = NULL;
 		}
-		
-		$this->load();
 	}
 		
 	/**
