@@ -11,6 +11,8 @@
  * @link      https://github.com/alexbilbie/codeigniter-mongodb-library
  */
 
+class Mongo_db_exception extends Exception {}
+
 class Mongo_db
 {
 	
