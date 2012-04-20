@@ -921,7 +921,7 @@ class Mongo_db
 		{
 			try
 			{
-				$returns[] = $cursor->getNext();
+				$documents[] = $cursor->getNext();
 			}
 			
 			catch (MongoCursorException $exception)
