@@ -10,7 +10,7 @@
  * @copyright	Copyright (c) 2010, Alex Bilbie.
  * @license		http://www.opensource.org/licenses/mit-license.php
  * @link		http://alexbilbie.com
- * @version		Version 0.4.8
+ * @version		Version 0.5
  *
  * Thanks to Kyle Dye (kyledye.com), Nick Jackson (nickjackson.me), Mikhail Kozlov (mikhailkozlov.com) and Phil Sturgeon (philsturgeon.co.uk) for additional help
  */
