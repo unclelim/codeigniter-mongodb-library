@@ -772,7 +772,7 @@ class Mongo_db
 			$value .= '$';
 		}
 		
-		$regex = $value . '/' . $flags;
+		$regex = '/' . $value . '/' . $flags;
 		$this->wheres[$field] = new MongoRegex($regex);
 		return $this;
 	}
