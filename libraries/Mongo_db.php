@@ -10,7 +10,7 @@
  * @copyright	Copyright (c) 2010, Alex Bilbie.
  * @license		http://www.opensource.org/licenses/mit-license.php
  * @link		http://alexbilbie.com
- * @version		Version 0.5.1
+ * @version		Version 0.5.2
  *
  * Thanks to Kyle Dye (kyledye.com), Nick Jackson (nickjackson.me), Mikhail Kozlov (mikhailkozlov.com) and Phil Sturgeon (philsturgeon.co.uk) for additional help
  */
@@ -441,7 +441,7 @@ class Mongo_db {
 	
 	function where_near($field = '', $co = array())
 	{
-		$this->__where_init($field);
+		$this->_where_init($field);
 		$this->where[$what]['$near'] = $co;
 		return ($this);
 	}
