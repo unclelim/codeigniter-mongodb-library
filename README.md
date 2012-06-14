@@ -40,8 +40,8 @@ The result will be an object containing matching documents.
 * `where_gte`				Where something is greater than or equal to something
 * `where_lt`				Where something is less than something
 * `where_lte`				Where something is less than or equal to something
-* `where_not_equal`			Where something is not equal to something
-* `where_near``				Where something is near to something (2d geospatial search)
+* `where_ne`				Where something is not equal to something
+* `where_near`				Where something is near to something (2d geospatial search)
 * `order_by`				Order the results
 * `limit`				Limit the number of returned results
 
