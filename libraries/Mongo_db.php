@@ -1827,7 +1827,7 @@ class Mongo_db
 		} 
 		catch (MongoConnectionException $exception)
 		{
-			if($this->_ci && $this->_ci->config->item('mongo_suppress_connect_error'))
+			if($this->_config_data['mongo_suppress_connect_error'])
 			{
 				$this->_show_error('Unable to connect to MongoDB', 500);
 			}
