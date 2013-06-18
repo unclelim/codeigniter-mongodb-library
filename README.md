@@ -85,3 +85,13 @@ The result will be an object containing matching documents.
 ## Collection Functions
 
 * `drop_collection`		Drops a collection
+
+## F.A.Q
+
+* When used with Codeigniter's cronjob mode, it throws this error 'The MongoDB PECL extension has not been installed or enabled'...
+  In most of the Ubuntu and other distro there are two locations of 'php.ini'. Use 'locate' to find them and add:
+  ...
+  extension=mongo.so
+  ...
+
+
